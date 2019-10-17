@@ -31,6 +31,10 @@ class Char:
         else:
             raise ValueError("Char object can only represent one char.")
 
+    def change_char(self, char):
+        """Changes self.char attribute to `char`"""
+        self.char = char
+
 
 class Image:
     """Something displayed on the canvas"""
@@ -52,6 +56,12 @@ class Image:
             canvas_y = self.y + char.y
 
             self.canvas.replace(canvas_x, canvas_y, char.char)
+
+    def change(self, x, y, char):
+        """Changes the character of a Char in a certain position to `char`"""
+        for char in self.chars:
+            if char.x == x and char.y == y:
+                char.change_char(char)
 
 
 class CommandInput(Image):
