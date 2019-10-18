@@ -36,6 +36,27 @@ def main(stdscr):
         time.sleep(0.01)
 
 
+    t = 0
+    timer_running = False
+    while True:
+
+        key = stdscr.getch()
+
+        if key == 32:  # spacebar
+            if timer_running:
+                timer_running = False
+            else:
+                timer_running = True
+
+        stdscr.clear()
+        stdscr.addstr(str(round(t, 2)))
+        stdscr.refresh()
+
+        if timer_running:
+            t += 0.01
+        time.sleep(0.01)
+
+
 if __name__ == "__main__":
 
     signal.signal(signal.SIGINT, signal_handler)
