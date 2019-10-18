@@ -1,8 +1,17 @@
 import curses
+import signal
 import time
 
 import art
 import graphics
+
+
+class ExitException(Exception):
+    """Tells the program when to exit"""
+
+
+def signal_handler(sig, frame):
+    raise ExitException()
 
 
 def main(stdscr):
@@ -28,4 +37,10 @@ def main(stdscr):
 
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    try:
+        curses.wrapper(main)
+    except ExitException:
+        pass
