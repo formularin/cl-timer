@@ -1,9 +1,13 @@
 import curses
+import logging
 import signal
 import time
 
 import art
 import graphics
+
+
+logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
 
 
 class ExitException(Exception):
@@ -35,8 +39,8 @@ def main(stdscr):
 
         time.sleep(0.01)
 
-
-    t = 0
+    canvas = graphics.Canvas(curses.LINES - 1, curses.COLS - 1)
+    number_display = graphics.NumberDisplay(canvas, 0, 0)
     timer_running = False
     while True:
 
@@ -48,12 +52,13 @@ def main(stdscr):
             else:
                 timer_running = True
 
+        number_display.render()
         stdscr.clear()
-        stdscr.addstr(str(round(t, 2)))
+        stdscr.addstr(canvas.display)
         stdscr.refresh()
 
         if timer_running:
-            t += 0.01
+            number_display.increment()
         time.sleep(0.01)
 
 

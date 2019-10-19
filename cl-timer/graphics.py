@@ -1,5 +1,14 @@
+import art
+import logging
+
+
+logger = logging.getLogger(__name__)
+
+
 class Canvas:
-    """Represents string that is displayed to the screen with each frame"""
+    """
+    Represents string that is displayed to the screen with each frame
+    """
 
     def __init__(self, height, width):
         self.grid = [[" " for _ in range(width)] for _ in range(height)]
@@ -20,7 +29,9 @@ class Canvas:
 
 
 class Char:
-    """A single character that is part of an Image"""
+    """
+    A single character that is part of an Image
+    """
 
     def __init__(self, x, y, char):
 
@@ -32,8 +43,25 @@ class Char:
             raise ValueError("Char object can only represent one char.")
 
     def change_char(self, char):
-        """Changes self.char attribute to `char`"""
+        """
+        Changes self.char attribute to `char`
+        """
         self.char = char
+
+    def change_coords(self, x, y):
+        """
+        Changes self.x and self.y to given args
+        """
+        self.x = x
+        self.y = y
+
+    @classmethod
+    def fromstring(cls, string):
+        chars = []
+        for y, line in enumerate(string.split('\n')):
+            for x, char in enumerate(line):
+                chars.append(Char(x, y, char))
+        return chars
 
 
 class Image:
@@ -62,6 +90,17 @@ class Image:
         for char in self.chars:
             if char.x == x and char.y == y:
                 char.change_char(char)
+
+    def __str__(self):
+        max_x = max([char.x for char in self.chars]) + 1
+        max_y = max([char.y for char in self.chars]) + 1
+
+        chars = [[[] for _ in range(max_y)] for _ in range(max_x)]
+
+        for char in self.chars:
+            chars[char.x][char.y] = char.char
+
+        return '\n'.join([''.join(line) for line in chars])
 
 
 class CommandInput(Image):
@@ -112,3 +151,48 @@ class CommandInput(Image):
             len_chars = len(self.chars)
             self.chars = [Char(i, 0, " ") for i in range(len_chars)]
             self.render()
+
+
+class NumberDisplay(Image):
+    """
+    The Image that shows the time
+    """
+    def __init__(self, canvas, x, y):
+        self.digit_char_arrays = []
+        self.time = 0
+        self.digits = []
+        self.chars = []
+        Image.__init__(self, canvas, x, y, [])
+
+    def increment(self):
+        """
+        Increases displayed value by 0.01
+        """
+
+        self.time += 0.01
+        len_digits = len(self.digits)
+        self.digits = [int(d) if d != '.' else d for d in 
+                       str(round(self.time, 2))]
+
+        # logging.info(''.join([str(i) for i in self.digits[0:self.decimal_point_index]] + ['.'] + [str(i) for i in self.digits[self.decimal_point_index:]]))
+        if len(self.digits[self.digits.index('.') + 1:]) != 2:
+            self.digits.append(0)
+        # logging.info(f'{repr(self.digits)}')
+
+        digit_strings = []
+        for digit in self.digits:
+            if digit != '.':
+                digit_strings.append(art.DIGITS[digit])
+            else:
+                digit_strings.append(art.DECIMAL_POINT)
+
+        # logger.info(repr(digit_strings))
+
+        full_string_lines = [[] for i in range(4)]
+        for i in range(4):
+            for digit_string in digit_strings:
+                full_string_lines[i].append(digit_string.split('\n')[i])
+        full_string = '\n'.join([' '.join(line) for line in full_string_lines])
+
+        self.chars = Char.fromstring(full_string)
+        # logger.info('\n' + str(self))
