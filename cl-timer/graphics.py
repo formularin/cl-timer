@@ -103,14 +103,11 @@ class Image:
         return '\n'.join([''.join(line) for line in chars])
 
 
-class CommandInput(Image):
+class InputLine(Image):
     """
     Represents a line where if you type, it will record what was typed
     """
-
-    def __init__(self, canvas):
-        
-        prompt = ": "
+    def __init__(self, canvas, prompt):
         self.prompt_length = len(prompt)
         self.cursor_index = self.prompt_length
         self.submitted = False
@@ -151,6 +148,16 @@ class CommandInput(Image):
             len_chars = len(self.chars)
             self.chars = [Char(i, 0, " ") for i in range(len_chars)]
             self.render()
+
+
+class CommandInput(InputLine):
+    """
+    Represents an InputLine that is meant for typing commands
+    """
+
+    def __init__(self, canvas):
+        InputLine.__init__(self, canvas, ": ")
+        
 
 
 class NumberDisplay(Image):
@@ -200,3 +207,50 @@ class NumberDisplay(Image):
     def reset(self):
         self.time = 0
         self.chars = Char.fromstring(art.STARTING_TIME)
+
+
+class Cursor(Image):
+    """Represents the block character used to represent cursor"""
+
+    def __init__(self, canvas):
+        Image.__init__(self, canvas, 0, 0, [Char(0, 0, u"\u2588")])
+
+        self.previous_x = self.x
+        self.previous_y = self.y
+
+        self.previous_char = Char(0, 0, " ")
+
+    def render(self):
+        """
+        Override inherited render method because
+        this Image can move and has only one char
+        """
+        self.canvas.replace(
+            self.previous_y,
+            (len(self.canvas.grid) - 1) - self.previous_x,
+            " ")
+        self.canvas.replace(
+            self.y,
+            (len(self.canvas.grid) - 1) - self.x,
+            self.chars[0].char)
+
+    def toggle_char(self):
+        """Changes from block char to space for blinking effect"""
+        new_char = self.previous_char
+        old_char = self.chars[0]
+        self.chars[0] = new_char
+        self.previous_char = old_char
+
+    def move(self, x, y):
+        """Moves cursor to (x, y) on the canvas"""
+
+        self.previous_x = self.x
+        self.previous_y = self.y
+
+        self.x = x
+        self.y = y
+
+    def hide(self):
+        if self.chars[0] == Char(0, 0, u"\u2588"):
+            self.toggle_char()
+        self.render()
