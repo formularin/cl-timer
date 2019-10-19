@@ -53,6 +53,7 @@ def main(stdscr):
                 timer_running = False
             else:
                 timer_running = True
+                number_display.reset()
 
         timer_background.render()
         number_display.render()

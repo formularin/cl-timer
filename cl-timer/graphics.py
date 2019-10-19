@@ -196,3 +196,7 @@ class NumberDisplay(Image):
 
         self.chars = Char.fromstring(full_string)
         # logger.info('\n' + str(self))
+
+    def reset(self):
+        self.time = 0
+        self.chars = Char.fromstring(art.STARTING_TIME)
