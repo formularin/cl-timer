@@ -87,9 +87,20 @@ class Image:
 
     def change(self, x, y, char):
         """Changes the character of a Char in a certain position to `char`"""
-        for char in self.chars:
-            if char.x == x and char.y == y:
-                char.change_char(char)
+        chars_coords = set([(c.x, c.y) for c in self.chars])
+        input_coords = set((x, y))
+        overlap = chars_coords & input_coords
+        if overlap != set():
+            try:
+                overlap_coords = list(overlap)[0]
+            except IndexError as ie:
+                logger.info(str(overlap))
+                raise ie
+            previous_char = [c for c in self.chars if (c.x, c.y) == overlap_coords][0]
+            previous_chars.change_char(char)
+        else:
+            self.chars.append(Char(x, y, char))
+        
 
     def __str__(self):
         max_x = max([char.x for char in self.chars]) + 1

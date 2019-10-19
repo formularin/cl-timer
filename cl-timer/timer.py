@@ -7,6 +7,7 @@ import getpass
 
 import art
 import graphics
+import scramble
 
 
 HOME = f'/Users/{getpass.getuser()}'
@@ -85,9 +86,10 @@ def main(stdscr):
         pass
     
     session_name_image = graphics.Image(canvas, 0, 0, graphics.Char.fromstring(session))
-    number_display = graphics.NumberDisplay(canvas, 15, 3)
+    scramble_image = graphics.Image(canvas, 0, 2, graphics.Char.fromstring(scramble.generate_scramble()))
+    number_display = graphics.NumberDisplay(canvas, 15, 5)
     timer_background_char_array = graphics.Char.fromstring(art.TIMER_BACKGROUND)
-    timer_background = graphics.Image(canvas, 0, 1, timer_background_char_array)
+    timer_background = graphics.Image(canvas, 0, 3, timer_background_char_array)
     timer_running = False
 
     while True:
@@ -99,11 +101,15 @@ def main(stdscr):
                 timer_running = False
                 with open(f'{HOME}/.cl-timer/{session}', 'a') as f:
                     f.write(''.join([d for d in str(round(number_display.time, 2))]) + '\n')
+                new_scramble = scramble.generate_scramble()
+                for x, char in enumerate(new_scramble):
+                    scramble_image.change(x, 0, char)
             else:
                 timer_running = True
                 number_display.reset()
 
         session_name_image.render()
+        scramble_image.render()
         timer_background.render()
         number_display.render()
         stdscr.clear()

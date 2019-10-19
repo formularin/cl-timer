@@ -28,4 +28,4 @@ def generate_scramble():
     scramble_moves = []
     for i in range(20):
         scramble_moves.append(choose_move(scramble_moves))
-    return scramble_moves
+    return ' '.join(scramble_moves)
