@@ -40,7 +40,9 @@ def main(stdscr):
         time.sleep(0.01)
 
     canvas = graphics.Canvas(curses.LINES - 1, curses.COLS - 1)
-    number_display = graphics.NumberDisplay(canvas, 0, 0)
+    number_display = graphics.NumberDisplay(canvas, 15, 2)
+    timer_background_char_array = graphics.Char.fromstring(art.TIMER_BACKGROUND)
+    timer_background = graphics.Image(canvas, 0, 0, timer_background_char_array)
     timer_running = False
     while True:
 
@@ -52,6 +54,7 @@ def main(stdscr):
             else:
                 timer_running = True
 
+        timer_background.render()
         number_display.render()
         stdscr.clear()
         stdscr.addstr(canvas.display)

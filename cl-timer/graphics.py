@@ -161,8 +161,8 @@ class NumberDisplay(Image):
         self.digit_char_arrays = []
         self.time = 0
         self.digits = []
-        self.chars = []
-        Image.__init__(self, canvas, x, y, [])
+        self.chars = Char.fromstring(art.STARTING_TIME)
+        Image.__init__(self, canvas, x, y, self.chars)
 
     def increment(self):
         """
