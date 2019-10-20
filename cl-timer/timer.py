@@ -123,10 +123,10 @@ def main(stdscr):
     scramble_image = graphics.Image(canvas, 0, 2, graphics.Char.fromstring(scramble.generate_scramble()))
     number_display = graphics.NumberDisplay(canvas, 15, 5)
     timer_background = graphics.Image(canvas, 0, 3, graphics.Char.fromstring(art.TIMER_BACKGROUND))
-    ao5_image = graphics.Image(canvas, 51, 5, graphics.Char.fromstring(f'AO5: {calculate_average(5)}'))
-    ao12_image = graphics.Image(canvas, 51, 7, graphics.Char.fromstring(f'AO12: {calculate_average(12)}'))
-    best_time_image = graphics.Image(canvas, 51, 9, graphics.Char.fromstring(f'Best time: {get_best_time()}'))
-    worst_time_image = graphics.Image(canvas, 51, 11, graphics.Char.fromstring(f'Worst time: {get_worst_time()}'))
+    ao5_image = graphics.Image(canvas, 51, 4, graphics.Char.fromstring(f'AO5: {calculate_average(5)}'))
+    ao12_image = graphics.Image(canvas, 51, 5, graphics.Char.fromstring(f'AO12: {calculate_average(12)}'))
+    best_time_image = graphics.Image(canvas, 51, 6, graphics.Char.fromstring(f'Best time: {get_best_time()}'))
+    worst_time_image = graphics.Image(canvas, 51, 7, graphics.Char.fromstring(f'Worst time: {get_worst_time()}'))
     timer_running = False
 
     while True:
