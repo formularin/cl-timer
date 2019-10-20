@@ -1,16 +1,18 @@
 import curses
-import logging
+import getpass
+import os
 import signal
 import time
-import os
-import getpass
 
-import art
-import graphics
-import scramble
+from art import TIMER_BACKGROUND, TITLE_ART
+from graphics import Canvas, Cursor, Image, InputLine, NumberDisplay
+from scramble import generate_scramble
 
 
 def char(string):
+    """
+    Convert string to list of grapihcs.Char objects.
+    """
     return graphics.Char.fromstring(string)
 
 
@@ -22,56 +24,36 @@ except FileExistsError:
     pass
 
 
-logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
-
-
 class ExitException(Exception):
-    """Tells the program when to exit"""
+    """
+    Tells the program when to exit
+    """
 
 
 def signal_handler(sig, frame):
+    """
+    What to do in case of KeyboardInterrupt
+    """
     raise ExitException()
 
 
-def main(stdscr):
+def ask_for_input(stdscr, canvas, input_line, cursor):
     """
-    Mainloop for the program
+    Uses graphics.InputLine object to get input from user.
     """
-
-    curses.curs_set(0)
-    stdscr.nodelay(True)
-
-    canvas = graphics.Canvas(curses.LINES - 1, curses.COLS - 1)
-    cursor = graphics.Cursor(canvas)
-
-    while True:
-
-        key = stdscr.getch()
-
-        if key != -1:
-            break
-
-        stdscr.clear()
-        stdscr.addstr(art.TITLE_ART)
-        stdscr.refresh()
-
-        time.sleep(0.01)
-
-    session_name_input = graphics.InputLine(canvas, "session name: ")
-
     frame = 0
     while True:
 
         key = stdscr.getch()
 
-        if not session_name_input.submitted:
+        if not input_line.submitted:
 
-            session_name_input.type_char(key)
-            cursor.move(0, session_name_input.cursor_index)
+            input_line.type_char(key)
+            cursor.move(0, input_line.cursor_index)
             if frame % 50 == 0:
                 cursor.toggle_char()
 
-            session_name_input.render()
+            input_line.render()
             cursor.render()
 
         else:
@@ -85,31 +67,71 @@ def main(stdscr):
         frame += 1
         time.sleep(0.01)
 
-    session = session_name_input.value
+    return input_line.value
+
+
+def main(stdscr):
+    """
+    Includes all mainloops for the app.
+    """
+
+    curses.curs_set(0)  # hide cursor (I have my own)
+    stdscr.nodelay(True)  # makes stdscr.getch() non-blocking
+
+    canvas = Canvas(curses.LINES - 1, curses.COLS - 1)
+    cursor = Cursor(canvas)
+
+    while True:
+
+        key = stdscr.getch()
+
+        if key != -1:
+            break
+
+        stdscr.clear()
+        stdscr.addstr(TITLE_ART)
+        stdscr.refresh()
+
+        time.sleep(0.01)
+
+    # sessions are groups of solves, stored in files in ~/.cl-timer
+    # if this is a new session, create a new file, if not, use an existing one.
+
+    session = session_name_input = InputLine(canvas, 'session name: ')
+    ask_for_input(stdscr, canvas, session_name_input, cursor)
+    
     if not os.path.isfile(f'{HOME}/.cl-timer/{session}'):
         with open(f'{HOME}/.cl-timer/{session}', 'w+') as f:
             pass
-    SESSION_FILE = f'{HOME}/.cl-timer/{session}'
+    session_file = f'{HOME}/.cl-timer/{session}'
     
     def calculate_average(length):
-        with open(SESSION_FILE, 'r') as f:
-            content = f.read()
-        string_times = content.split('\n')
-        string_times.remove('')
-        times = [float(i) for i in string_times]
+        """
+        Returns current average of `length`
+
+        Looks through session file and finds last `length` solves.
+        Excludes best and worst times, and return average of the rest.
+        """
+        with open(session_file, 'r') as f:
+            times = [float(i) for i in f.read().split('\n')[1:]]
+
         if len(times) < length:
-            return ""
+            # `length` solves haven't been done yet.
+            return ''
         else:
-            latest_average = times[len(times) - length:]
+            latest_average = times[len(times) - length:]  # list of last `length` solves
             latest_average.remove(max(latest_average))
             latest_average.remove(min(latest_average))
+
+            # calculate average and add zero if it doesn't go to 100ths place.
             average_chars = list(str(round(sum(latest_average) / (length - 2), 2)))
             if len(average_chars[average_chars.index('.'):]) < 2:
                 average_chars.append('0')
+            
             return ''.join(average_chars)
 
     def get_best_time():
-        with open(SESSION_FILE, 'r') as f:
+        with open(session_file, 'r') as f:
             content = f.read()
         string_times = content.split('\n')
         string_times.remove('')
@@ -117,21 +139,21 @@ def main(stdscr):
         return str(min(times))
 
     def get_worst_time():
-        with open(SESSION_FILE, 'r') as f:
+        with open(session_file, 'r') as f:
             content = f.read()
         string_times = content.split('\n')
         string_times.remove('')
         times = [float(i) for i in string_times]
         return str(max(times))
 
-    session_name_image = graphics.Image(canvas, 0, 0, char(session))
-    scramble_image = graphics.Image(canvas, 0, 2, char(scramble.generate_scramble()))
-    number_display = graphics.NumberDisplay(canvas, 15, 5)
-    timer_background = graphics.Image(canvas, 0, 3, char(art.TIMER_BACKGROUND))
-    ao5_image = graphics.Image(canvas, 51, 4, char(f'AO5: {calculate_average(5)}'))
-    ao12_image = graphics.Image(canvas, 51, 5, char(f'AO12: {calculate_average(12)}'))
-    best_time_image = graphics.Image(canvas, 51, 6, char(f'Best time: {get_best_time()}'))
-    worst_time_image = graphics.Image(canvas, 51, 7, char(f'Worst time: {get_worst_time()}'))
+    session_name_image = Image(canvas, 0, 0, char(session))
+    scramble_image = Image(canvas, 0, 2, char(generate_scramble()))
+    number_display = NumberDisplay(canvas, 15, 5)
+    timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))
+    ao5_image = Image(canvas, 51, 4, char(f'AO5: {calculate_average(5)}'))
+    ao12_image = Image(canvas, 51, 5, char(f'AO12: {calculate_average(12)}'))
+    best_time_image = Image(canvas, 51, 6, char(f'Best time: {get_best_time()}'))
+    worst_time_image = Image(canvas, 51, 7, char(f'Worst time: {get_worst_time()}'))
     timer_running = False
 
     while True:
@@ -143,23 +165,23 @@ def main(stdscr):
 
                 timer_running = False
 
-                with open(SESSION_FILE, 'a') as f:
+                with open(session_file, 'a') as f:
                     f.write('\n' + ''.join([d for d in str(round(number_display.time, 2))]))
 
-                new_scramble = scramble.generate_scramble()
-                scramble_image.change_all_chars(char(new_scramble))
+                new_scramble = generate_scramble()
+                scramble_image.chars = char(new_scramble)
 
                 ao5 = calculate_average(5)
-                ao5_image.change_all_chars(char(f'AO5: {ao5}'))
+                ao5_image.chars = char(f'AO5: {ao5}')
 
                 ao12 = calculate_average(12)
-                ao12_image.change_all_chars(char(f'AO12: {ao12}'))
+                ao12_image.chars = char(f'AO12: {ao12}')
 
                 best_time = get_best_time()
-                best_time_image.change_all_chars(char(f'Best time: {best_time}'))
+                best_time_image.chars = char(f'Best time: {best_time}')
 
                 worst_time = get_worst_time()
-                worst_time_image.change_all_chars(char(f'Worst time: {worst_time}'))
+                worst_time_image.chars = char(f'Worst time: {worst_time}')
             else:
                 timer_running = True
                 number_display.reset()
@@ -181,7 +203,7 @@ def main(stdscr):
         time.sleep(0.01)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     signal.signal(signal.SIGINT, signal_handler)
 
