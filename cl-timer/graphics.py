@@ -102,6 +102,10 @@ class Image:
             self.chars.append(Char(x, y, char))
         
 
+    def change_all_chars(self, chars):
+        self.chars = chars
+
+
     def __str__(self):
         max_x = max([char.x for char in self.chars]) + 1
         max_y = max([char.y for char in self.chars]) + 1

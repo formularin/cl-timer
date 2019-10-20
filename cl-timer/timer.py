@@ -89,9 +89,9 @@ def main(stdscr):
     def calculate_average(length):
         with open(f'{HOME}/.cl-timer/{session}', 'r') as f:
             content = f.read()
-            string_times = content.split('\n')
-            string_times.remove('')
-            times = [float(i) for i in string_times]
+        string_times = content.split('\n')
+        string_times.remove('')
+        times = [float(i) for i in string_times]
         if len(times) < length:
             return ""
         else:
@@ -103,12 +103,30 @@ def main(stdscr):
                 average_chars.append('0')
             return ''.join(average_chars)
 
+    def get_best_time():
+        with open(f'{HOME}/.cl-timer/{session}', 'r') as f:
+            content = f.read()
+        string_times = content.split('\n')
+        string_times.remove('')
+        times = [float(i) for i in string_times]
+        return str(min(times))
+
+    def get_worst_time():
+        with open(f'{HOME}/.cl-timer/{session}', 'r') as f:
+            content = f.read()
+        string_times = content.split('\n')
+        string_times.remove('')
+        times = [float(i) for i in string_times]
+        return str(max(times))
+
     session_name_image = graphics.Image(canvas, 0, 0, graphics.Char.fromstring(session))
     scramble_image = graphics.Image(canvas, 0, 2, graphics.Char.fromstring(scramble.generate_scramble()))
     number_display = graphics.NumberDisplay(canvas, 15, 5)
     timer_background = graphics.Image(canvas, 0, 3, graphics.Char.fromstring(art.TIMER_BACKGROUND))
     ao5_image = graphics.Image(canvas, 51, 5, graphics.Char.fromstring(f'AO5: {calculate_average(5)}'))
     ao12_image = graphics.Image(canvas, 51, 7, graphics.Char.fromstring(f'AO12: {calculate_average(12)}'))
+    best_time_image = graphics.Image(canvas, 51, 9, graphics.Char.fromstring(f'Best time: {get_best_time()}'))
+    worst_time_image = graphics.Image(canvas, 51, 11, graphics.Char.fromstring(f'Worst time: {get_worst_time()}'))
     timer_running = False
 
     while True:
@@ -124,20 +142,27 @@ def main(stdscr):
                     f.write('\n' + ''.join([d for d in str(round(number_display.time, 2))]))
 
                 new_scramble = scramble.generate_scramble()
-                for x, char in enumerate(new_scramble):
-                    scramble_image.change(x, 0, char)
+                scramble_image.change_all_chars(graphics.Char.fromstring(new_scramble))
 
-                for x, char in enumerate(calculate_average(5)):
-                    ao5_image.change(x + 5, 0, char)
+                ao5 = calculate_average(5)
+                ao5_image.change_all_chars(graphics.Char.fromstring(f'AO5: {ao5}'))
 
-                for x, char in enumerate(calculate_average(12)):
-                    ao12_image.change(x + 6, 0, char)
+                ao12 = calculate_average(12)
+                ao12_image.change_all_chars(graphics.Char.fromstring(f'AO12: {ao12}'))
+
+                best_time = get_best_time()
+                best_time_image.change_all_chars(graphics.Char.fromstring(f'Best time: {best_time}'))
+
+                worst_time = get_worst_time()
+                worst_time_image.change_all_chars(graphics.Char.fromstring(f'Worst time: {worst_time}'))
             else:
                 timer_running = True
                 number_display.reset()
 
         ao5_image.render()
         ao12_image.render()
+        best_time_image.render()
+        worst_time_image.render()
         session_name_image.render()
         scramble_image.render()
         timer_background.render()
