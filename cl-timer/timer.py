@@ -10,6 +10,10 @@ import graphics
 import scramble
 
 
+def char(string):
+    return graphics.Char.fromstring(string)
+
+
 HOME = f'/Users/{getpass.getuser()}'
 
 try:
@@ -85,9 +89,10 @@ def main(stdscr):
     if not os.path.isfile(f'{HOME}/.cl-timer/{session}'):
         with open(f'{HOME}/.cl-timer/{session}', 'w+') as f:
             pass
+    SESSION_FILE = f'{HOME}/.cl-timer/{session}'
     
     def calculate_average(length):
-        with open(f'{HOME}/.cl-timer/{session}', 'r') as f:
+        with open(SESSION_FILE, 'r') as f:
             content = f.read()
         string_times = content.split('\n')
         string_times.remove('')
@@ -104,7 +109,7 @@ def main(stdscr):
             return ''.join(average_chars)
 
     def get_best_time():
-        with open(f'{HOME}/.cl-timer/{session}', 'r') as f:
+        with open(SESSION_FILE, 'r') as f:
             content = f.read()
         string_times = content.split('\n')
         string_times.remove('')
@@ -112,21 +117,21 @@ def main(stdscr):
         return str(min(times))
 
     def get_worst_time():
-        with open(f'{HOME}/.cl-timer/{session}', 'r') as f:
+        with open(SESSION_FILE, 'r') as f:
             content = f.read()
         string_times = content.split('\n')
         string_times.remove('')
         times = [float(i) for i in string_times]
         return str(max(times))
 
-    session_name_image = graphics.Image(canvas, 0, 0, graphics.Char.fromstring(session))
-    scramble_image = graphics.Image(canvas, 0, 2, graphics.Char.fromstring(scramble.generate_scramble()))
+    session_name_image = graphics.Image(canvas, 0, 0, char(session))
+    scramble_image = graphics.Image(canvas, 0, 2, char(scramble.generate_scramble()))
     number_display = graphics.NumberDisplay(canvas, 15, 5)
-    timer_background = graphics.Image(canvas, 0, 3, graphics.Char.fromstring(art.TIMER_BACKGROUND))
-    ao5_image = graphics.Image(canvas, 51, 4, graphics.Char.fromstring(f'AO5: {calculate_average(5)}'))
-    ao12_image = graphics.Image(canvas, 51, 5, graphics.Char.fromstring(f'AO12: {calculate_average(12)}'))
-    best_time_image = graphics.Image(canvas, 51, 6, graphics.Char.fromstring(f'Best time: {get_best_time()}'))
-    worst_time_image = graphics.Image(canvas, 51, 7, graphics.Char.fromstring(f'Worst time: {get_worst_time()}'))
+    timer_background = graphics.Image(canvas, 0, 3, char(art.TIMER_BACKGROUND))
+    ao5_image = graphics.Image(canvas, 51, 4, char(f'AO5: {calculate_average(5)}'))
+    ao12_image = graphics.Image(canvas, 51, 5, char(f'AO12: {calculate_average(12)}'))
+    best_time_image = graphics.Image(canvas, 51, 6, char(f'Best time: {get_best_time()}'))
+    worst_time_image = graphics.Image(canvas, 51, 7, char(f'Worst time: {get_worst_time()}'))
     timer_running = False
 
     while True:
@@ -138,23 +143,23 @@ def main(stdscr):
 
                 timer_running = False
 
-                with open(f'{HOME}/.cl-timer/{session}', 'a') as f:
+                with open(SESSION_FILE, 'a') as f:
                     f.write('\n' + ''.join([d for d in str(round(number_display.time, 2))]))
 
                 new_scramble = scramble.generate_scramble()
-                scramble_image.change_all_chars(graphics.Char.fromstring(new_scramble))
+                scramble_image.change_all_chars(char(new_scramble))
 
                 ao5 = calculate_average(5)
-                ao5_image.change_all_chars(graphics.Char.fromstring(f'AO5: {ao5}'))
+                ao5_image.change_all_chars(char(f'AO5: {ao5}'))
 
                 ao12 = calculate_average(12)
-                ao12_image.change_all_chars(graphics.Char.fromstring(f'AO12: {ao12}'))
+                ao12_image.change_all_chars(char(f'AO12: {ao12}'))
 
                 best_time = get_best_time()
-                best_time_image.change_all_chars(graphics.Char.fromstring(f'Best time: {best_time}'))
+                best_time_image.change_all_chars(char(f'Best time: {best_time}'))
 
                 worst_time = get_worst_time()
-                worst_time_image.change_all_chars(graphics.Char.fromstring(f'Worst time: {worst_time}'))
+                worst_time_image.change_all_chars(char(f'Worst time: {worst_time}'))
             else:
                 timer_running = True
                 number_display.reset()
