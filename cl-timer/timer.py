@@ -5,7 +5,7 @@ import signal
 import time
 
 from art import TIMER_BACKGROUND, TITLE_ART
-from graphics import Canvas, Cursor, Image, InputLine, NumberDisplay
+from graphics import Canvas, Cursor, Image, InputLine, NumberDisplay, Char
 from scramble import generate_scramble
 
 
@@ -13,7 +13,7 @@ def char(string):
     """
     Convert string to list of grapihcs.Char objects.
     """
-    return graphics.Char.fromstring(string)
+    return Char.fromstring(string)
 
 
 HOME = f'/Users/{getpass.getuser()}'
@@ -97,8 +97,8 @@ def main(stdscr):
     # sessions are groups of solves, stored in files in ~/.cl-timer
     # if this is a new session, create a new file, if not, use an existing one.
 
-    session = session_name_input = InputLine(canvas, 'session name: ')
-    ask_for_input(stdscr, canvas, session_name_input, cursor)
+    session_name_input = InputLine(canvas, 'session name: ')
+    session = ask_for_input(stdscr, canvas, session_name_input, cursor)
     
     if not os.path.isfile(f'{HOME}/.cl-timer/{session}'):
         with open(f'{HOME}/.cl-timer/{session}', 'w+') as f:
@@ -148,14 +148,16 @@ def main(stdscr):
 
     session_name_image = Image(canvas, 0, 0, char(session))
     scramble_image = Image(canvas, 0, 2, char(generate_scramble()))
+
     number_display = NumberDisplay(canvas, 15, 5)
     timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))
+
     ao5_image = Image(canvas, 51, 4, char(f'AO5: {calculate_average(5)}'))
     ao12_image = Image(canvas, 51, 5, char(f'AO12: {calculate_average(12)}'))
     best_time_image = Image(canvas, 51, 6, char(f'Best time: {get_best_time()}'))
     worst_time_image = Image(canvas, 51, 7, char(f'Worst time: {get_worst_time()}'))
-    timer_running = False
 
+    timer_running = False
     while True:
 
         key = stdscr.getch()
@@ -186,20 +188,24 @@ def main(stdscr):
                 timer_running = True
                 number_display.reset()
 
+        session_name_image.render()
+        scramble_image.render()
+        
+        timer_background.render()
+        number_display.render()
+
         ao5_image.render()
         ao12_image.render()
         best_time_image.render()
         worst_time_image.render()
-        session_name_image.render()
-        scramble_image.render()
-        timer_background.render()
-        number_display.render()
+
         stdscr.clear()
         stdscr.addstr(canvas.display)
         stdscr.refresh()
 
         if timer_running:
             number_display.increment()
+
         time.sleep(0.01)
 
 
