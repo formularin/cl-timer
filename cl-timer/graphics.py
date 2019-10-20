@@ -266,6 +266,5 @@ class Cursor(Image):
         self.y = y
 
     def hide(self):
-        if self.chars[0] == Char(0, 0, u"\u2588"):
-            self.toggle_char()
+        self.chars[0] = Char(0, 0, ' ')
         self.render()
