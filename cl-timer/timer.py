@@ -105,6 +105,14 @@ def main(stdscr):
             pass
     session_file = f'{HOME}/.cl-timer/{session}'
     
+    def get_times():
+        """
+        Returns all times in session
+        """
+        with open(session_file, 'r') as f:
+            times = [float(i) for i in f.read().split('\n')[1:]]
+        return times
+
     def calculate_average(length):
         """
         Returns current average of `length`
@@ -112,8 +120,7 @@ def main(stdscr):
         Looks through session file and finds last `length` solves.
         Excludes best and worst times, and return average of the rest.
         """
-        with open(session_file, 'r') as f:
-            times = [float(i) for i in f.read().split('\n')[1:]]
+        times = get_times()
 
         if len(times) < length:
             # `length` solves haven't been done yet.
@@ -131,19 +138,11 @@ def main(stdscr):
             return ''.join(average_chars)
 
     def get_best_time():
-        with open(session_file, 'r') as f:
-            content = f.read()
-        string_times = content.split('\n')
-        string_times.remove('')
-        times = [float(i) for i in string_times]
+        times = get_times()
         return str(min(times))
 
     def get_worst_time():
-        with open(session_file, 'r') as f:
-            content = f.read()
-        string_times = content.split('\n')
-        string_times.remove('')
-        times = [float(i) for i in string_times]
+        times = get_times()
         return str(max(times))
 
     session_name_image = Image(canvas, 0, 0, char(session))
