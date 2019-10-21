@@ -9,12 +9,7 @@ from graphics import Canvas, Cursor, Image, InputLine, NumberDisplay, Char
 from scramble import generate_scramble
 
 
-def char(string):
-    """
-    Convert string to list of grapihcs.Char objects.
-    """
-    return Char.fromstring(string)
-
+char = lambda string: Char.fromstring(string)
 
 HOME = f'/Users/{getpass.getuser()}'
 
