@@ -139,11 +139,19 @@ def main(stdscr):
 
     def get_best_time():
         times = get_times()
-        return str(min(times))
+        try:
+            best = str(min(times))
+        except ValueError:
+            return ""
+        return best
 
     def get_worst_time():
         times = get_times()
-        return str(max(times))
+        try:
+            worst = str(max(times))
+        except ValueError:
+            return ""
+        return worst
 
     session_name_image = Image(canvas, 0, 0, char(session))
     scramble_image = Image(canvas, 0, 2, char(generate_scramble()))
