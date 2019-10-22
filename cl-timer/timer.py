@@ -9,6 +9,13 @@ from graphics import Canvas, Cursor, Image, InputLine, NumberDisplay, Char
 from scramble import generate_scramble
 
 
+import logging
+import timeit
+
+
+logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
+
+
 char = lambda string: Char.fromstring(string)
 
 HOME = f'/Users/{getpass.getuser()}'
@@ -23,13 +30,6 @@ class ExitException(Exception):
     """
     Tells the program when to exit
     """
-
-
-def signal_handler(sig, frame):
-    """
-    What to do in case of KeyboardInterrupt
-    """
-    raise ExitException()
 
 
 def ask_for_input(stdscr, canvas, input_line, cursor):
@@ -70,6 +70,28 @@ def main(stdscr):
     Includes all mainloops for the app.
     """
 
+    times = []
+    session_file = ""
+    def signal_handler(sig, frame):
+        """
+        What to do in case of KeyboardInterrupt
+
+        Writes times to session file
+        (saving file interaction to the end saves time during frames.)
+        """
+        logging.info(times)
+        if times != [] and session_file != "":
+            list_string_times = [list(str(time)) for time in times]
+            for time in list_string_times:
+                if len(time[time.index('.') + 1:]) == 1:
+                    time.append('0')
+            string_of_times = '\n'.join(''.join(time) for time in list_string_times)
+            with open(session_file, 'w') as f:
+                f.write(string_of_times)
+        raise ExitException()
+
+    signal.signal(signal.SIGINT, signal_handler)
+
     curses.curs_set(0)  # hide cursor (I have my own)
     stdscr.nodelay(True)  # makes stdscr.getch() non-blocking
 
@@ -100,13 +122,8 @@ def main(stdscr):
             pass
     session_file = f'{HOME}/.cl-timer/{session}'
     
-    def get_times():
-        """
-        Returns all times in session
-        """
-        with open(session_file, 'r') as f:
-            times = [float(i) for i in f.read().split('\n')[1:]]
-        return times
+    with open(session_file, 'r') as f:
+        times = [float(i) for i in f.read().split('\n')[1:]]
 
     def calculate_average(length):
         """
@@ -115,8 +132,6 @@ def main(stdscr):
         Looks through session file and finds last `length` solves.
         Excludes best and worst times, and return average of the rest.
         """
-        times = get_times()
-
         if len(times) < length:
             # `length` solves haven't been done yet.
             return ''
@@ -133,7 +148,6 @@ def main(stdscr):
             return ''.join(average_chars)
 
     def get_best_time():
-        times = get_times()
         try:
             best = str(min(times))
         except ValueError:
@@ -141,7 +155,6 @@ def main(stdscr):
         return best
 
     def get_worst_time():
-        times = get_times()
         try:
             worst = str(max(times))
         except ValueError:
@@ -160,7 +173,11 @@ def main(stdscr):
     worst_time_image = Image(canvas, 51, 7, char(f'Worst time: {get_worst_time()}'))
 
     timer_running = False
+    delay = 0  # how far behind the program is
     while True:
+        
+        # to make sure each frame is exactly 0.01 secs
+        start_time = time.time()
 
         key = stdscr.getch()
 
@@ -169,8 +186,8 @@ def main(stdscr):
 
                 timer_running = False
 
-                with open(session_file, 'a') as f:
-                    f.write('\n' + ''.join([d for d in str(round(number_display.time, 2))]))
+                t = round(number_display.time, 2)
+                times.append(t)
 
                 new_scramble = generate_scramble()
                 scramble_image.chars = char(new_scramble)
@@ -208,14 +225,36 @@ def main(stdscr):
         if timer_running:
             number_display.increment()
 
-        time.sleep(0.01)
-
+        # take away from sleep time the amount that will get us back on track
+        end_time = time.time()
+        duration = end_time - start_time
+        if duration > 0.01:
+            # duration was longer than ideal sleep time.
+            # no time to sleep, add to delay and keep going
+            delay += duration - 0.01
+        else:
+            if delay != 0:
+                # if there is delay
+                if (delay) > (0.01 - duration):
+                    # the sum of the delay and the duration is longer than ideal sleep time
+                    # no time to sleep, subtract from delay and keep going
+                    delay -= 0.01 - duration
+                else:
+                    # we have enough spare time in this frame to completely reset the delay
+                    # we are back on track!
+                    delay = 0
+                    time.sleep((0.01 - duration) - delay)
+            else:
+                # there is no delay, just sleep normally, but make sure the frame is exactly 0.01 secs long!
+                time.sleep(0.01 - duration)
 
 if __name__ == '__main__':
-
-    signal.signal(signal.SIGINT, signal_handler)
 
     try:
         curses.wrapper(main)
     except ExitException:
         pass
+
+# TODO:
+# test to see if solve times are accurate, and update time every 10 frames
+# at the end display the correct time
