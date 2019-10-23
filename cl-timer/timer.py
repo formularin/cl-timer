@@ -241,27 +241,13 @@ def main(stdscr):
             number_display.increment()
 
         # take away from sleep time the amount that will get us back on track
-        end_time = time.time()
-        duration = end_time - start_time
-        if duration > 0.01:
-            # duration was longer than ideal sleep time.
-            # no time to sleep, add to delay and keep going
-            delay += duration - 0.01
+        duration = time.time() - start_time
+        if (duration + delay) > 0.01:
+            # can't make it back to on-time right now
+            # by not sleeping, we have saved (0.01 - duration) seconds
+            delay -= 0.01 - duration
         else:
-            if delay != 0:
-                # if there is delay
-                if (delay) > (0.01 - duration):
-                    # the sum of the delay and the duration is longer than ideal sleep time
-                    # no time to sleep, subtract from delay and keep going
-                    delay -= 0.01 - duration
-                else:
-                    # we have enough spare time in this frame to completely reset the delay
-                    # we are back on track!
-                    delay = 0
-                    time.sleep((0.01 - duration) - delay)
-            else:
-                # there is no delay, just sleep normally, but make sure the frame is exactly 0.01 secs long!
-                time.sleep(0.01 - duration)
+            time.sleep(0.01 - (duration + delay))
 
 if __name__ == '__main__':
 
