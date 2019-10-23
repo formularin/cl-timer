@@ -77,6 +77,17 @@ def display_text(stdscr, string):
         time.sleep(0.01)
 
 
+def add_zero(number):
+    """
+    Add a zero if the value doesn't have
+    2 digits behind it's decimal point
+    """
+    list_number = list(str(number))
+    if len(list_number[list_number.index('.'):]) < 2:
+        list_number.append('0')
+    return ''.join(list_number)
+
+
 def main(stdscr):
     """
     Includes all mainloops for the app.
@@ -94,8 +105,7 @@ def main(stdscr):
         if times != [] and session_file != "":
             list_string_times = [list(str(time)) for time in times]
             for time in list_string_times:
-                if len(time[time.index('.') + 1:]) == 1:
-                    time.append('0')
+                time = add_zero(time)
             string_of_times = '\n'.join(''.join(time) for time in list_string_times)
             with open(session_file, 'w') as f:
                 f.write(string_of_times)
@@ -151,14 +161,14 @@ def main(stdscr):
 
     def get_best_time():
         try:
-            best = str(min(times))
+            best = add_zero(min(times))
         except ValueError:
             return ""
         return best
 
     def get_worst_time():
         try:
-            worst = str(max(times))
+            worst = add_zero(max(times))
         except ValueError:
             return ""
         return worst
