@@ -203,6 +203,9 @@ def main(stdscr):
                 t = round(time.time() - solve_start_time, 2)
                 times.append(t)
 
+                number_display.time = t
+                number_display.update()
+
                 new_scramble = generate_scramble()
                 scramble_image.chars = char(new_scramble)
 
@@ -239,6 +242,7 @@ def main(stdscr):
 
         if timer_running:
             number_display.increment()
+            number_display.update()
 
         # take away from sleep time the amount that will get us back on track
         duration = time.time() - start_time

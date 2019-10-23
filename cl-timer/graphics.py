@@ -203,6 +203,13 @@ class NumberDisplay(Image):
         """
 
         self.time += 0.01
+
+    def update(self):
+        """
+        This is to differentiate from the increment method
+        so it can be executed separately.
+        (The code in this functino was formerly in the increment method)
+        """
         len_digits = len(self.digits)
         self.digits = [int(d) if d != '.' else d for d in 
                        str(round(self.time, 2))]
