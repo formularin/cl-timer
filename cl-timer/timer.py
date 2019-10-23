@@ -188,6 +188,7 @@ def main(stdscr):
     delay = 0  # how far behind the program is
 
     solve_start_time = 0
+    frame = 0
     while True:
         
         # to make sure each frame is exactly 0.01 secs
@@ -197,27 +198,28 @@ def main(stdscr):
 
         if key == 32:  # spacebar
             if timer_running:
-
+                
+                frame = 0
                 timer_running = False
 
                 t = round(time.time() - solve_start_time, 2)
                 times.append(t)
 
+                # update number display to show real time
                 number_display.time = t
                 number_display.update()
 
+                # generate new scramble and update scramble_image
                 new_scramble = generate_scramble()
                 scramble_image.chars = char(new_scramble)
 
+                # calculate stats and update images on screen
                 ao5 = calculate_average(5)
                 ao5_image.chars = char(f'AO5: {ao5}')
-
                 ao12 = calculate_average(12)
                 ao12_image.chars = char(f'AO12: {ao12}')
-
                 best_time = get_best_time()
                 best_time_image.chars = char(f'Best time: {best_time}')
-
                 worst_time = get_worst_time()
                 worst_time_image.chars = char(f'Worst time: {worst_time}')
             else:
@@ -241,7 +243,12 @@ def main(stdscr):
         stdscr.refresh()
 
         if timer_running:
-            number_display.increment()
+            # update time to actual time every 0.5 seconds
+            if frame % 50 == 0:
+                number_display.time = time.time() - solve_start_time
+            else:
+                number_display.increment()
+            
             number_display.update()
 
         # take away from sleep time the amount that will get us back on track
@@ -252,6 +259,8 @@ def main(stdscr):
             delay -= 0.01 - duration
         else:
             time.sleep(0.01 - (duration + delay))
+        
+        frame += 1
 
 if __name__ == '__main__':
 
