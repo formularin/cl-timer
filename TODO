@@ -1,0 +1,13 @@
+TODO
+
+ - fix scramble
+ - rest of stats
+ - other cube scrambles
+ - fix spacebar glitch
+ - speed up timer
+
+ - commands
+   - select times, scrambles, averages
+   - graph using clplot
+   - enter different session
+   - scramble length
