@@ -4,16 +4,9 @@ import os
 import signal
 import time
 
-from art import TIMER_BACKGROUND, TITLE_ART
+from art import DISCLAIMER, TIMER_BACKGROUND, TITLE_ART
 from graphics import Canvas, Cursor, Image, InputLine, NumberDisplay, Char
 from scramble import generate_scramble
-
-
-import logging
-import timeit
-
-
-logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
 
 
 char = lambda string: Char.fromstring(string)
@@ -65,6 +58,25 @@ def ask_for_input(stdscr, canvas, input_line, cursor):
     return input_line.value
 
 
+def display_text(stdscr, string):
+    """
+    A simple loop that diplays text until key is pressed
+    """
+
+    while True:
+
+        key = stdscr.getch()
+
+        if key != -1:
+            break
+
+        stdscr.clear()
+        stdscr.addstr(string)
+        stdscr.refresh()
+
+        time.sleep(0.01)
+
+
 def main(stdscr):
     """
     Includes all mainloops for the app.
@@ -79,7 +91,6 @@ def main(stdscr):
         Writes times to session file
         (saving file interaction to the end saves time during frames.)
         """
-        logging.info(times)
         if times != [] and session_file != "":
             list_string_times = [list(str(time)) for time in times]
             for time in list_string_times:
@@ -98,18 +109,7 @@ def main(stdscr):
     canvas = Canvas(curses.LINES - 1, curses.COLS - 1)
     cursor = Cursor(canvas)
 
-    while True:
-
-        key = stdscr.getch()
-
-        if key != -1:
-            break
-
-        stdscr.clear()
-        stdscr.addstr(TITLE_ART)
-        stdscr.refresh()
-
-        time.sleep(0.01)
+    display_text(stdscr, TITLE_ART)
 
     # sessions are groups of solves, stored in files in ~/.cl-timer
     # if this is a new session, create a new file, if not, use an existing one.
@@ -124,6 +124,8 @@ def main(stdscr):
     
     with open(session_file, 'r') as f:
         times = [float(i) for i in f.read().split('\n')[1:]]
+
+    display_text(stdscr, DISCLAIMER)
 
     def calculate_average(length):
         """
@@ -174,6 +176,8 @@ def main(stdscr):
 
     timer_running = False
     delay = 0  # how far behind the program is
+
+    solve_start_time = 0
     while True:
         
         # to make sure each frame is exactly 0.01 secs
@@ -186,7 +190,7 @@ def main(stdscr):
 
                 timer_running = False
 
-                t = round(number_display.time, 2)
+                t = round(time.time() - solve_start_time, 2)
                 times.append(t)
 
                 new_scramble = generate_scramble()
@@ -206,6 +210,7 @@ def main(stdscr):
             else:
                 timer_running = True
                 number_display.reset()
+                solve_start_time = time.time()
 
         session_name_image.render()
         scramble_image.render()
@@ -254,7 +259,3 @@ if __name__ == '__main__':
         curses.wrapper(main)
     except ExitException:
         pass
-
-# TODO:
-# test to see if solve times are accurate, and update time every 10 frames
-# at the end display the correct time

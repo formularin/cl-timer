@@ -21,6 +21,12 @@ DIGITS = [
     ' __ \n|__|\n   |\n    ',
 ]
 
+DISCLAIMER = '\
+This is a beta version, so the displayed time\nwill not be the same as the st\
+ored ones.\n\nKnow that the stored times are always correct,\ntherefore your a\
+verages are always accurate.\n\nPress any key to continue.'[1:]
+
+
 DECIMAL_POINT = ' \n \n.\n '
 
 TIMER_BACKGROUND = '\
