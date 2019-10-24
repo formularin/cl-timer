@@ -5,7 +5,8 @@ import signal
 import time
 
 from art import DISCLAIMER, TIMER_BACKGROUND, TITLE_ART
-from graphics import Canvas, Cursor, Image, InputLine, NumberDisplay, Char
+from graphics import (Canvas, Char, Cursor, Image,
+                      InputLine, NumberDisplay, Scramble)
 from scramble import generate_scramble
 
 
@@ -203,7 +204,7 @@ def main(stdscr):
         return worst
 
     session_name_image = Image(canvas, 0, 0, char(session))
-    scramble_image = Image(canvas, 0, 2, char(generate_scramble()))
+    scramble_image = Scramble(canvas, 0, 2, char(generate_scramble()))
 
     number_display = NumberDisplay(canvas, 15, 5)
     timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))

@@ -238,6 +238,30 @@ class NumberDisplay(Image):
         self.chars = Char.fromstring(STARTING_TIME)
 
 
+class Scramble(Image):
+    """
+    Literally just an image that deletes all previous chars when chars are changed
+    """
+
+    def __init__(self, canvas, x, y, chars):
+        
+        self.canvas = canvas
+        self.x = x
+        self.y = y
+        self._chars = chars
+
+    @property
+    def chars(self):
+        return self._chars
+
+    @chars.setter
+    def chars(self, chars):
+        for c in self._chars:
+            self.canvas.replace(self.x + c.x, self.y, " ")
+        self._chars = chars
+        self.render()
+
+
 class Cursor(Image):
     """
     Represents the block character used to represent cursor
