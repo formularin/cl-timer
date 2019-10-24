@@ -1,10 +1,8 @@
 TODO
 
  - fix scramble
- - rest of stats
  - other cube scrambles
  - fix spacebar glitch
- - speed up timer
 
  - commands
    - select times, scrambles, averages
@@ -12,3 +10,4 @@ TODO
    - enter different session
    - scramble length
    - delete, plus 2, dnf
+   - worst averages
