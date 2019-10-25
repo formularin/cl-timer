@@ -10,11 +10,6 @@ from graphics import (Canvas, Char, Cursor, Image,
 from scramble import generate_scramble
 
 
-import logging
-
-logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
-
-
 char = lambda string: Char.fromstring(string)
 
 HOME = f'/Users/{getpass.getuser()}'
@@ -263,9 +258,6 @@ def main(stdscr):
                 worst_time_image.chars = char(f'Worst time: {worst_time}')
                 number_of_times_image.chars = char(f'Number of Times: {len(times)}')
 
-                # logging.info(f'{ao5s=}')
-                # logging.info(f'{ao12s=}')
-                # logging.info(f'{times=}')
             else:
                 timer_running = True
                 number_display.reset()
