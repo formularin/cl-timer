@@ -16,9 +16,12 @@ DIGITS = [
 
 
 DISCLAIMER = '\
-This is a beta version, so the displayed time\nwill not be the same as the st\
-ored ones.\n\nKnow that the stored times are always correct,\ntherefore your a\
-verages are always accurate.\n\nPress any key to continue.'
+The timer starts a few seconds after you let go of the spacebar,\nbut immedia\
+tely afterwards it catches up to the correct times.\n\nKnow that the time disp\
+layed at the end to each solve is accurate\ndown to the hundredth of a second,\
+ as are all of the other stats\nmade available by this timer.\n\nThanks for re\
+ading, and have fun!'
+
 
 
 STARTING_TIME = ' __     __   __\n|  |   |  | |  |\n|__| . |__| |__|'
