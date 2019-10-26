@@ -197,13 +197,6 @@ class NumberDisplay(Image):
         self.chars = Char.fromstring(STARTING_TIME)
         Image.__init__(self, canvas, x, y, self.chars)
 
-    def increment(self):
-        """
-        Increases displayed value by 0.01
-        """
-
-        self.time += 0.01
-
     def update(self):
         """
         This is to differentiate from the increment method

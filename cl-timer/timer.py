@@ -214,19 +214,41 @@ def main(stdscr):
 
     timer_running = False
     delay = 0  # how far behind the program is
+    spacebar_pressed = False
+    last_25_keys = [-1 for _ in range(25)]
 
     solve_start_time = 0
     frame = 0
     while True:
-        
+
         # to make sure each frame is exactly 0.01 secs
         start_time = time.time()
 
         key = stdscr.getch()
+        if not timer_running:
+            if key == 32:
+                solve_start_time = time.time()
+        last_25_keys.append(key)
+        last_25_keys.pop(0)
 
-        if key == 32:  # spacebar
-            if timer_running:
-                
+        if not timer_running:
+
+            if spacebar_pressed:
+                if 32 in last_25_keys:
+                    time.sleep(0.01)
+                    continue
+                else:
+                    spacebar_pressed = False
+
+                    timer_running = True
+                    number_display.reset()
+
+            else:
+                if key == 32:  # spacebar
+                    spacebar_pressed = True
+
+        else:
+            if key == 32:
                 frame = 0
                 timer_running = False
 
@@ -258,11 +280,6 @@ def main(stdscr):
                 worst_time_image.chars = char(f'Worst time: {worst_time}')
                 number_of_times_image.chars = char(f'Number of Times: {len(times)}')
 
-            else:
-                timer_running = True
-                number_display.reset()
-                solve_start_time = time.time()
-
         session_name_image.render()
         scramble_image.render()
         
@@ -282,12 +299,7 @@ def main(stdscr):
         stdscr.refresh()
 
         if timer_running:
-            # update time to actual time every 0.5 seconds
-            if frame % 50 == 0:
-                number_display.time = time.time() - solve_start_time
-            else:
-                number_display.increment()
-            
+            number_display.time = time.time() - solve_start_time
             number_display.update()
 
         # take away from sleep time the amount that will get us back on track
