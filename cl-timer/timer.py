@@ -117,7 +117,10 @@ def main(stdscr):
 
     signal.signal(signal.SIGINT, signal_handler)
 
-    curses.curs_set(0)  # hide cursor (I have my own)
+    try:
+        curses.curs_set(0)  # hide cursor (I have my own)
+    except Exception:
+        pass
     stdscr.nodelay(True)  # makes stdscr.getch() non-blocking
 
     canvas = Canvas(curses.LINES - 1, curses.COLS - 1)
