@@ -33,8 +33,9 @@ class Char:
     A single character that is part of an Image
     """
 
-    def __init__(self, x, y, char):
+    def __init__(self, x, y, char, color):
 
+        self.color = color
         self.x = x
         self.y = y
         if len(char) == 1:
@@ -50,7 +51,7 @@ class Char:
         self.y = y
 
     @classmethod
-    def fromstring(cls, string):
+    def fromstring(cls, string, color):
         """
         Takes string and returns array of Char objects
         that can be used to create and Image object that appears as that string.
@@ -58,7 +59,7 @@ class Char:
         chars = []
         for y, line in enumerate(string.split('\n')):
             for x, char in enumerate(line):
-                chars.append(Char(x, y, char))
+                chars.append(Char(x, y, char, color))
         return chars
 
 
@@ -119,9 +120,9 @@ class InputLine(Image):
         self.inputted_chars = []
 
         y = len(canvas.grid) - 1
-        prompt_chars = [Char(i, 0, char) for i, char in enumerate(prompt)]
+        prompt_chars = [Char(i, 0, char, 'white') for i, char in enumerate(prompt)]
         # this Image fills entire horizontal distance of canvas
-        input_chars = [Char(i, 0, ' ') for i in range(self.prompt_length, len(canvas.grid[-1]))]
+        input_chars = [Char(i, 0, ' ', 'white') for i in range(self.prompt_length, len(canvas.grid[-1]))]
         chars = prompt_chars + input_chars
 
         Image.__init__(self, canvas, 0, y, chars)
@@ -139,7 +140,7 @@ class InputLine(Image):
         """
         if self.cursor_index > self.prompt_length:
             # change appearance
-            self.chars[self.cursor_index] = Char(self.cursor_index, 0, ' ')
+            self.chars[self.cursor_index] = Char(self.cursor_index, 0, ' ', 'white')
 
             # change value
             self.inputted_chars = self.inputted_chars[:-1]
@@ -158,7 +159,7 @@ class InputLine(Image):
             new_char = chr(char)  # converts int ascii code to get string for inputted char
 
             # replace current char in cursor location with new char
-            self.chars[self.cursor_index] = Char(self.cursor_index, 0, new_char)
+            self.chars[self.cursor_index] = Char(self.cursor_index, 0, new_char, 'white')
 
             self.cursor_index += 1
             self.inputted_chars.append(new_char)
@@ -170,7 +171,7 @@ class InputLine(Image):
             self.submitted = True
 
             # renders self as a line of space chars, appearing invisible.
-            self.chars = [Char(i, 0, ' ') for i in range(len(self.chars))]
+            self.chars = [Char(i, 0, ' ', 'white') for i in range(len(self.chars))]
             self.render()
 
 
@@ -198,7 +199,7 @@ class NumberDisplay(Image):
         self.digit_char_arrays = []
         self.time = 0
         self.digits = []
-        self.chars = Char.fromstring(STARTING_TIME)
+        self.chars = Char.fromstring(STARTING_TIME, 'white')
         Image.__init__(self, canvas, x, y, self.chars)
 
     def update(self):
@@ -228,11 +229,11 @@ class NumberDisplay(Image):
                 full_string_lines[i].append(digit_string.split('\n')[i])
         full_string = '\n'.join([' '.join(line) for line in full_string_lines])
 
-        self.chars = Char.fromstring(full_string)
+        self.chars = Char.fromstring(full_string, 'white')
 
     def reset(self):
         self.time = 0
-        self.chars = Char.fromstring(STARTING_TIME)
+        self.chars = Char.fromstring(STARTING_TIME, 'white')
 
 
 class Scramble(Image):
@@ -268,12 +269,12 @@ class Cursor(Image):
 
         # u'\u2588' is the unicode full-block character
 
-        Image.__init__(self, canvas, 0, 0, [Char(0, 0, u'\u2588')])
+        Image.__init__(self, canvas, 0, 0, [Char(0, 0, u'\u2588', 'white')])
 
         self.previous_x = self.x
         self.previous_y = self.y
 
-        self.previous_char = Char(0, 0, ' ')
+        self.previous_char = Char(0, 0, ' ', 'white')
 
     def render(self):
         """
@@ -318,5 +319,5 @@ class Cursor(Image):
         Temporarily hides self.
         """
 
-        self.chars[0] = Char(0, 0, ' ')
+        self.chars[0] = Char(0, 0, ' ', 'white')
         self.render()

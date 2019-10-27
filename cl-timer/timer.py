@@ -11,7 +11,7 @@ from graphics import (Canvas, Char, Cursor, Image,
 from scramble import generate_scramble
 
 
-char = lambda string: Char.fromstring(string)
+char = Char.fromstring  # for more readable code
 
 HOME = f'/Users/{getpass.getuser()}'
 
@@ -111,7 +111,7 @@ def command_line(stdscr, background, canvas, scramble_image):
     Inspired by vim...
     """
 
-    bg = Image(canvas, 0, 0, char(background))
+    bg = Image(canvas, 0, 0, char(background, 'white'))
     command_inputs = []
 
     while True:
@@ -132,7 +132,7 @@ def command_line(stdscr, background, canvas, scramble_image):
         if words[1] in ['puzzle', 'scramble-length']:
             new_scramble = generate_scramble(int(settings['puzzle']),
                                         int(settings['scramble-length']))
-            scramble_image.chars = char(new_scramble)
+            scramble_image.chars = char(new_scramble, 'white')
             scramble_image.render()
 
 
@@ -184,7 +184,11 @@ def main(stdscr):
     session_file = f'{HOME}/.cl-timer/{session}'
     
     with open(session_file, 'r') as f:
-        time_lines = [line.split('\t') for line in f.read().split('\n')]
+        contents = f.read()
+        if contents == '':
+            time_lines = []
+        else:
+            time_lines = [line.split('\t') for line in contents.split('\n')]
 
     for line in time_lines:
         times.append(line[0])
@@ -245,21 +249,21 @@ def main(stdscr):
             return ""
         return worst
 
-    session_name_image = Image(canvas, 0, 0, char(session))
+    session_name_image = Image(canvas, 0, 0, char(session, 'white'))
     scramble_image = Scramble(canvas, 0, 2, char(
         generate_scramble(int(settings['puzzle']),
-        int(settings['scramble-length']))))
+        int(settings['scramble-length'])), 'white'))
 
     number_display = NumberDisplay(canvas, 15, 5)
-    timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))
+    timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND, 'white'))
 
-    ao5_image = Image(canvas, 51, 4, char(f'AO5: {calculate_average(len(times), 5)}'))
-    ao12_image = Image(canvas, 51, 5, char(f'AO12: {calculate_average(len(times), 12)}'))
-    best_ao5_image = Image(canvas, 51, 6, char(f'Best AO5: {get_best_average(5)}'))
-    best_ao12_image = Image(canvas, 51, 7, char(f'Best AO12: {get_best_average(12)}'))
-    best_time_image = Image(canvas, 51, 8, char(f'Best time: {get_best_time()}'))
-    worst_time_image = Image(canvas, 51, 9, char(f'Worst time: {get_worst_time()}'))
-    number_of_times_image = Image(canvas, 51, 10, char(f'Number of Times: {len(times)}'))
+    ao5_image = Image(canvas, 51, 4, char(f'AO5: {calculate_average(len(times), 5)}', 'white'))
+    ao12_image = Image(canvas, 51, 5, char(f'AO12: {calculate_average(len(times), 12)}', 'white'))
+    best_ao5_image = Image(canvas, 51, 6, char(f'Best AO5: {get_best_average(5)}', 'white'))
+    best_ao12_image = Image(canvas, 51, 7, char(f'Best AO12: {get_best_average(12)}', 'white'))
+    best_time_image = Image(canvas, 51, 8, char(f'Best time: {get_best_time()}', 'white'))
+    worst_time_image = Image(canvas, 51, 9, char(f'Worst time: {get_worst_time()}', 'white'))
+    number_of_times_image = Image(canvas, 51, 10, char(f'Number of Times: {len(times)}', 'white'))
 
     timer_running = False
     delay = 0  # how far behind the program is
@@ -316,24 +320,24 @@ def main(stdscr):
                 # generate new scramble and update scramble_image
                 new_scramble = generate_scramble(int(settings['puzzle']),
                                             int(settings['scramble-length']))
-                scramble_image.chars = char(new_scramble)
+                scramble_image.chars = char(new_scramble, 'white')
 
                 # calculate stats and update images on screen
                 ao5 = calculate_average(len(times), 5)
                 ao5s.append(ao5)
-                ao5_image.chars = char(f'AO5: {ao5}')
+                ao5_image.chars = char(f'AO5: {ao5}', 'white')
                 ao12 = calculate_average(len(times), 12)
                 ao12s.append(ao12)
-                ao12_image.chars = char(f'AO12: {ao12}')
+                ao12_image.chars = char(f'AO12: {ao12}', 'white')
                 best_ao5 = get_best_average(5)
-                best_ao5_image.chars = char(f'Best AO5: {best_ao5}')
+                best_ao5_image.chars = char(f'Best AO5: {best_ao5}', 'white')
                 best_ao12 = get_best_average(12)
-                best_ao12_image.chars = char(f'Best AO12: {best_ao12}')
+                best_ao12_image.chars = char(f'Best AO12: {best_ao12}', 'white')
                 best_time = get_best_time()
-                best_time_image.chars = char(f'Best time: {best_time}')
+                best_time_image.chars = char(f'Best time: {best_time}', 'white')
                 worst_time = get_worst_time()
-                worst_time_image.chars = char(f'Worst time: {worst_time}')
-                number_of_times_image.chars = char(f'Number of Times: {len(times)}')
+                worst_time_image.chars = char(f'Worst time: {worst_time}', 'white')
+                number_of_times_image.chars = char(f'Number of Times: {len(times)}', 'white')
 
         session_name_image.render()
         scramble_image.render()
