@@ -202,7 +202,7 @@ def main(stdscr):
         return worst
 
     session_name_image = Image(canvas, 0, 0, char(session))
-    scramble_image = Scramble(canvas, 0, 2, char(generate_scramble()))
+    scramble_image = Scramble(canvas, 0, 2, char(generate_scramble(3)))
 
     number_display = NumberDisplay(canvas, 15, 5)
     timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))
@@ -263,7 +263,7 @@ def main(stdscr):
                 number_display.update()
 
                 # generate new scramble and update scramble_image
-                new_scramble = generate_scramble()
+                new_scramble = generate_scramble(3)
                 scramble_image.chars = char(new_scramble)
 
                 # calculate stats and update images on screen
