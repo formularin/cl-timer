@@ -185,6 +185,10 @@ class CommandInput(InputLine):
     def __init__(self, canvas):
         InputLine.__init__(self, canvas, ': ')
 
+    def hide(self):
+        for char in self.chars:
+            self.canvas.replace(self.x + char.x, self.y + char.y, " ")
+
 
 class NumberDisplay(Image):
     """

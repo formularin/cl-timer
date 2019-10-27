@@ -14,11 +14,6 @@ AXES = [
 
 SIDES = [[size[i:i + 3] for i in range(0, len(size), 3)] for size in MOVES]
 
-SCRAMBLE_LENGTHS = {
-    2:11,
-    3:20,
-}
-
 
 def choose_move(scramble_moves, size):
     """
@@ -53,13 +48,13 @@ def choose_move(scramble_moves, size):
     return move
 
 
-def generate_scramble(size):
+def generate_scramble(size, length):
     """
     Returns a list of random moves 
     to scramble a rubik's cube in WCA notation
     """
     scramble_moves = []
-    for i in range(SCRAMBLE_LENGTHS[size]):
+    for i in range(length):
         scramble_moves.append(choose_move(scramble_moves, size))
     return ' '.join(scramble_moves)
 

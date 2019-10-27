@@ -6,8 +6,14 @@ import time
 
 from art import DISCLAIMER, TIMER_BACKGROUND, TITLE_ART
 from graphics import (Canvas, Char, Cursor, Image,
-                      InputLine, NumberDisplay, Scramble)
+                      InputLine, NumberDisplay,
+                      Scramble, CommandInput)
 from scramble import generate_scramble
+
+
+import logging
+
+logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
 
 
 char = lambda string: Char.fromstring(string)
@@ -25,8 +31,17 @@ class ExitException(Exception):
     Tells the program when to exit
     """
 
+class ExitCommandLine(Exception):
+    pass
 
-def ask_for_input(stdscr, canvas, input_line, cursor):
+
+settings = {
+    'puzzle': '3',
+    'scramble-length': '20'
+}
+
+
+def ask_for_input(stdscr, canvas, input_line, cursor, command_line=False):
     """
     Uses graphics.InputLine object to get input from user.
     """
@@ -34,6 +49,10 @@ def ask_for_input(stdscr, canvas, input_line, cursor):
     while True:
 
         key = stdscr.getch()
+
+        if command_line == True:
+            if key == 27:  # escape
+                raise ExitCommandLine()
 
         if not input_line.submitted:
 
@@ -90,6 +109,36 @@ def add_zero(number):
         if len(list_number[list_number.index('.') + 1:]) < 2:
             list_number.append('0')
         return ''.join(list_number)
+
+
+def command_line(stdscr, background, canvas, scramble_image):
+    """
+    Inspired by vim...
+    """
+
+    bg = Image(canvas, 0, 0, char(background))
+    command_inputs = []
+
+    while True:
+        try:
+            cmd_ipt = CommandInput(canvas)
+            command_inputs.append(cmd_ipt)
+            command = ask_for_input(
+                stdscr, canvas, cmd_ipt, Cursor(canvas), True)
+        except ExitCommandLine:
+            for c in command_inputs:
+                c.hide()
+            return
+
+        words = command.split(' ')
+        if words[0] == 'set':
+            settings[words[1]] = words[2]
+
+        if words[1] in ['puzzle', 'scramble-length']:
+            new_scramble = generate_scramble(int(settings['puzzle']),
+                                        int(settings['scramble-length']))
+            scramble_image.chars = char(new_scramble)
+            scramble_image.render()
 
 
 def main(stdscr):
@@ -202,7 +251,9 @@ def main(stdscr):
         return worst
 
     session_name_image = Image(canvas, 0, 0, char(session))
-    scramble_image = Scramble(canvas, 0, 2, char(generate_scramble(3)))
+    scramble_image = Scramble(canvas, 0, 2, char(
+        generate_scramble(int(settings['puzzle']),
+        int(settings['scramble-length']))))
 
     number_display = NumberDisplay(canvas, 15, 5)
     timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))
@@ -228,6 +279,11 @@ def main(stdscr):
         start_time = time.time()
 
         key = stdscr.getch()
+
+        if key == 58:  # :
+            command_line(stdscr, canvas.display, canvas, scramble_image)
+            continue
+
         if not timer_running:
             if key == 32:
                 solve_start_time = time.time()
@@ -263,7 +319,8 @@ def main(stdscr):
                 number_display.update()
 
                 # generate new scramble and update scramble_image
-                new_scramble = generate_scramble(3)
+                new_scramble = generate_scramble(int(settings['puzzle']),
+                                            int(settings['scramble-length']))
                 scramble_image.chars = char(new_scramble)
 
                 # calculate stats and update images on screen
