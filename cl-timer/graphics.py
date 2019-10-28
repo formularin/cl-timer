@@ -10,16 +10,22 @@ class Canvas:
 
     def __init__(self, height, width):
         # List of rows. Top row when displayed is at index 0
-        self.chars = Char.fromstring('\n'.join([''.join([' ' for _ in range(width)]) for _ in range(height)]), 'white')
+        self.grid = [[' ' for _ in range(width)] for _ in range(height)]
 
-    def replace(self, x, y, char, color):
+    def replace(self, x, y, char):
         """
         Replaces char in certain location of self.grid
         """
-        for c in self.chars:
-            if c.x == x and c.y == y:
-                c.char = char
-                c.color = color
+        row_index = (len(self.grid) - 1) - y
+        self.grid[row_index][x] = char
+
+    @property
+    def display(self):
+        """
+        String that is displayed onto the screen
+        """
+        rows = [''.join(row) for row in self.grid][::-1]
+        return '\n'.join(rows)
 
 
 class Char:
@@ -27,9 +33,8 @@ class Char:
     A single character that is part of an Image
     """
 
-    def __init__(self, x, y, char, color):
+    def __init__(self, x, y, char):
 
-        self.color = color
         self.x = x
         self.y = y
         if len(char) == 1:
@@ -45,15 +50,15 @@ class Char:
         self.y = y
 
     @classmethod
-    def fromstring(cls, string, color):
+    def fromstring(cls, string):
         """
         Takes string and returns array of Char objects
         that can be used to create and Image object that appears as that string.
         """
-        chars = set()
+        chars = []
         for y, line in enumerate(string.split('\n')):
             for x, char in enumerate(line):
-                chars.add(Char(x, y, char, color))
+                chars.append(Char(x, y, char))
         return chars
 
 
@@ -79,7 +84,7 @@ class Image:
             canvas_x = self.x + char.x
             canvas_y = self.y + char.y
 
-            self.canvas.replace(canvas_x, canvas_y, char.char, char.color)
+            self.canvas.replace(canvas_x, canvas_y, char.char)
 
     def __str__(self):
         """
@@ -113,10 +118,10 @@ class InputLine(Image):
         self.submitted = False
         self.inputted_chars = []
 
-        y = max([c.y for c in canvas.chars]) - 1
-        prompt_chars = [Char(i, 0, char, 'white') for i, char in enumerate(prompt)]
+        y = len(canvas.grid) - 1
+        prompt_chars = [Char(i, 0, char) for i, char in enumerate(prompt)]
         # this Image fills entire horizontal distance of canvas
-        input_chars = [Char(i, 0, ' ', 'white') for i in range(self.prompt_length, len([c.char for c in canvas.chars if c.y == y]))]
+        input_chars = [Char(i, 0, ' ') for i in range(self.prompt_length, len(canvas.grid[-1]))]
         chars = prompt_chars + input_chars
 
         Image.__init__(self, canvas, 0, y, chars)
@@ -134,7 +139,7 @@ class InputLine(Image):
         """
         if self.cursor_index > self.prompt_length:
             # change appearance
-            self.chars[self.cursor_index] = Char(self.cursor_index, 0, ' ', 'white')
+            self.chars[self.cursor_index] = Char(self.cursor_index, 0, ' ')
 
             # change value
             self.inputted_chars = self.inputted_chars[:-1]
@@ -153,7 +158,7 @@ class InputLine(Image):
             new_char = chr(char)  # converts int ascii code to get string for inputted char
 
             # replace current char in cursor location with new char
-            self.chars[self.cursor_index] = Char(self.cursor_index, 0, new_char, 'white')
+            self.chars[self.cursor_index] = Char(self.cursor_index, 0, new_char)
 
             self.cursor_index += 1
             self.inputted_chars.append(new_char)
@@ -165,7 +170,7 @@ class InputLine(Image):
             self.submitted = True
 
             # renders self as a line of space chars, appearing invisible.
-            self.chars = [Char(i, 0, ' ', 'white') for i in range(len(self.chars))]
+            self.chars = [Char(i, 0, ' ') for i in range(len(self.chars))]
             self.render()
 
 
@@ -193,7 +198,7 @@ class NumberDisplay(Image):
         self.digit_char_arrays = []
         self.time = 0
         self.digits = []
-        self.chars = Char.fromstring(STARTING_TIME, 'white')
+        self.chars = Char.fromstring(STARTING_TIME)
         Image.__init__(self, canvas, x, y, self.chars)
 
     def update(self):
@@ -223,11 +228,11 @@ class NumberDisplay(Image):
                 full_string_lines[i].append(digit_string.split('\n')[i])
         full_string = '\n'.join([' '.join(line) for line in full_string_lines])
 
-        self.chars = Char.fromstring(full_string, 'white')
+        self.chars = Char.fromstring(full_string)
 
     def reset(self):
         self.time = 0
-        self.chars = Char.fromstring(STARTING_TIME, 'white')
+        self.chars = Char.fromstring(STARTING_TIME)
 
 
 class Scramble(Image):
@@ -263,12 +268,12 @@ class Cursor(Image):
 
         # u'\u2588' is the unicode full-block character
 
-        Image.__init__(self, canvas, 0, 0, [Char(0, 0, u'\u2588', 'white')])
+        Image.__init__(self, canvas, 0, 0, [Char(0, 0, u'\u2588')])
 
         self.previous_x = self.x
         self.previous_y = self.y
 
-        self.previous_char = Char(0, 0, ' ', 'white')
+        self.previous_char = Char(0, 0, ' ')
 
     def render(self):
         """
@@ -279,22 +284,22 @@ class Cursor(Image):
         # cover previous location
         self.canvas.replace(
             self.previous_y,
-            (max([c.y for c in self.canvas.chars]) - 1) - self.previous_x,
-            ' ', 'white')
+            (len(self.canvas.grid) - 1) - self.previous_x,
+            ' ')
 
         # show self in current location
         self.canvas.replace(
             self.y,
-            (max([c.y for c in self.canvas.chars]) - 1) - self.x,
-            next(iter(self.chars)).char, 'white')
+            (len(self.canvas.grid) - 1) - self.x,
+            self.chars[0].char)
 
     def toggle_char(self):
         """
         Changes from block char to space for blinking effect
         """
         new_char = self.previous_char
-        old_char = next(iter(self.chars))
-        self.chars = {new_char}
+        old_char = self.chars[0]
+        self.chars[0] = new_char
         self.previous_char = old_char
 
     def move(self, x, y):
@@ -313,5 +318,5 @@ class Cursor(Image):
         Temporarily hides self.
         """
 
-        self.chars = {Char(0, 0, ' ', 'white')}
+        self.chars[0] = Char(0, 0, ' ')
         self.render()

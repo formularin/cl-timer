@@ -11,7 +11,7 @@ from graphics import (Canvas, Char, Cursor, Image,
 from scramble import generate_scramble
 
 
-char = Char.fromstring  # for more readable code
+char = lambda string: Char.fromstring(string)
 
 HOME = f'/Users/{getpass.getuser()}'
 
@@ -36,7 +36,7 @@ settings = {
 }
 
 
-def ask_for_input(stdscr, canvas, input_line, cursor, draw, command_line=False):
+def ask_for_input(stdscr, canvas, input_line, cursor, command_line=False):
     """
     Uses graphics.InputLine object to get input from user.
     """
@@ -63,7 +63,9 @@ def ask_for_input(stdscr, canvas, input_line, cursor, draw, command_line=False):
             cursor.hide()
             break
 
-        draw()
+        stdscr.clear()
+        stdscr.addstr(canvas.display)
+        stdscr.refresh()
 
         frame += 1
         time.sleep(0.01)
@@ -104,12 +106,12 @@ def add_zero(number):
         return ''.join(list_number)
 
 
-def command_line(stdscr, background, canvas, scramble_image, draw):
+def command_line(stdscr, background, canvas, scramble_image):
     """
     Inspired by vim...
     """
 
-    bg = Image(canvas, 0, 0, char(background, 'white'))
+    bg = Image(canvas, 0, 0, char(background))
     command_inputs = []
 
     while True:
@@ -117,7 +119,7 @@ def command_line(stdscr, background, canvas, scramble_image, draw):
             cmd_ipt = CommandInput(canvas)
             command_inputs.append(cmd_ipt)
             command = ask_for_input(
-                stdscr, canvas, cmd_ipt, Cursor(canvas), draw, True)
+                stdscr, canvas, cmd_ipt, Cursor(canvas), True)
         except ExitCommandLine:
             for c in command_inputs:
                 c.hide()
@@ -130,7 +132,7 @@ def command_line(stdscr, background, canvas, scramble_image, draw):
         if words[1] in ['puzzle', 'scramble-length']:
             new_scramble = generate_scramble(int(settings['puzzle']),
                                         int(settings['scramble-length']))
-            scramble_image.chars = char(new_scramble, 'white')
+            scramble_image.chars = char(new_scramble)
             scramble_image.render()
 
 
@@ -138,20 +140,6 @@ def main(stdscr):
     """
     Includes all mainloops for the app.
     """
-
-    # curses color pairs
-
-    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
-    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
-    curses.init_pair(3, curses.COLOR_GREEN, curses.COLOR_BLACK)
-
-    COLORS = {
-        'white': 1,
-        'red': 2,
-        'green': 3
-    }
-
-
 
     times = []
     ao5s = []
@@ -180,24 +168,6 @@ def main(stdscr):
     stdscr.nodelay(True)  # makes stdscr.getch() non-blocking
 
     canvas = Canvas(curses.LINES - 1, curses.COLS - 1)
-
-    def draw():
-
-        max_x = max([char.x for char in canvas.chars]) + 1
-        max_y = max([char.y for char in canvas.chars]) + 1
-
-        stdscr.clear()
-        for y in range(max_y):
-            for x in range(max_x):
-                for char in canvas.chars:
-                    if char.x == x and char.y == y:
-                        stdscr.addstr(char.char, COLORS[char.color])
-            try:
-                stdscr.addstr('\n')
-            except Exception:
-                pass
-        stdscr.refresh()
-
     cursor = Cursor(canvas)
 
     display_text(stdscr, TITLE_ART)
@@ -206,7 +176,7 @@ def main(stdscr):
     # if this is a new session, create a new file, if not, use an existing one.
 
     session_name_input = InputLine(canvas, 'session name: ')
-    session = ask_for_input(stdscr, canvas, session_name_input, cursor, draw)
+    session = ask_for_input(stdscr, canvas, session_name_input, cursor)
     
     if not os.path.isfile(f'{HOME}/.cl-timer/{session}'):
         with open(f'{HOME}/.cl-timer/{session}', 'w+') as f:
@@ -214,11 +184,7 @@ def main(stdscr):
     session_file = f'{HOME}/.cl-timer/{session}'
     
     with open(session_file, 'r') as f:
-        contents = f.read()
-        if contents == '':
-            time_lines = []
-        else:
-            time_lines = [line.split('\t') for line in contents.split('\n')]
+        time_lines = [line.split('\t') for line in f.read().split('\n')]
 
     for line in time_lines:
         times.append(line[0])
@@ -279,21 +245,21 @@ def main(stdscr):
             return ""
         return worst
 
-    session_name_image = Image(canvas, 0, 0, char(session, 'white'))
+    session_name_image = Image(canvas, 0, 0, char(session))
     scramble_image = Scramble(canvas, 0, 2, char(
         generate_scramble(int(settings['puzzle']),
-        int(settings['scramble-length'])), 'white'))
+        int(settings['scramble-length']))))
 
     number_display = NumberDisplay(canvas, 15, 5)
-    timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND, 'white'))
+    timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))
 
-    ao5_image = Image(canvas, 51, 4, char(f'AO5: {calculate_average(len(times), 5)}', 'white'))
-    ao12_image = Image(canvas, 51, 5, char(f'AO12: {calculate_average(len(times), 12)}', 'white'))
-    best_ao5_image = Image(canvas, 51, 6, char(f'Best AO5: {get_best_average(5)}', 'white'))
-    best_ao12_image = Image(canvas, 51, 7, char(f'Best AO12: {get_best_average(12)}', 'white'))
-    best_time_image = Image(canvas, 51, 8, char(f'Best time: {get_best_time()}', 'white'))
-    worst_time_image = Image(canvas, 51, 9, char(f'Worst time: {get_worst_time()}', 'white'))
-    number_of_times_image = Image(canvas, 51, 10, char(f'Number of Times: {len(times)}', 'white'))
+    ao5_image = Image(canvas, 51, 4, char(f'AO5: {calculate_average(len(times), 5)}'))
+    ao12_image = Image(canvas, 51, 5, char(f'AO12: {calculate_average(len(times), 12)}'))
+    best_ao5_image = Image(canvas, 51, 6, char(f'Best AO5: {get_best_average(5)}'))
+    best_ao12_image = Image(canvas, 51, 7, char(f'Best AO12: {get_best_average(12)}'))
+    best_time_image = Image(canvas, 51, 8, char(f'Best time: {get_best_time()}'))
+    worst_time_image = Image(canvas, 51, 9, char(f'Worst time: {get_worst_time()}'))
+    number_of_times_image = Image(canvas, 51, 10, char(f'Number of Times: {len(times)}'))
 
     timer_running = False
     delay = 0  # how far behind the program is
@@ -310,7 +276,7 @@ def main(stdscr):
         key = stdscr.getch()
 
         if key == 58:  # :
-            command_line(stdscr, canvas.display, canvas, scramble_image, draw)
+            command_line(stdscr, canvas.display, canvas, scramble_image)
             continue
 
         if not timer_running:
@@ -350,24 +316,24 @@ def main(stdscr):
                 # generate new scramble and update scramble_image
                 new_scramble = generate_scramble(int(settings['puzzle']),
                                             int(settings['scramble-length']))
-                scramble_image.chars = char(new_scramble, 'white')
+                scramble_image.chars = char(new_scramble)
 
                 # calculate stats and update images on screen
                 ao5 = calculate_average(len(times), 5)
                 ao5s.append(ao5)
-                ao5_image.chars = char(f'AO5: {ao5}', 'white')
+                ao5_image.chars = char(f'AO5: {ao5}')
                 ao12 = calculate_average(len(times), 12)
                 ao12s.append(ao12)
-                ao12_image.chars = char(f'AO12: {ao12}', 'white')
+                ao12_image.chars = char(f'AO12: {ao12}')
                 best_ao5 = get_best_average(5)
-                best_ao5_image.chars = char(f'Best AO5: {best_ao5}', 'white')
+                best_ao5_image.chars = char(f'Best AO5: {best_ao5}')
                 best_ao12 = get_best_average(12)
-                best_ao12_image.chars = char(f'Best AO12: {best_ao12}', 'white')
+                best_ao12_image.chars = char(f'Best AO12: {best_ao12}')
                 best_time = get_best_time()
-                best_time_image.chars = char(f'Best time: {best_time}', 'white')
+                best_time_image.chars = char(f'Best time: {best_time}')
                 worst_time = get_worst_time()
-                worst_time_image.chars = char(f'Worst time: {worst_time}', 'white')
-                number_of_times_image.chars = char(f'Number of Times: {len(times)}', 'white')
+                worst_time_image.chars = char(f'Worst time: {worst_time}')
+                number_of_times_image.chars = char(f'Number of Times: {len(times)}')
 
         session_name_image.render()
         scramble_image.render()
@@ -383,7 +349,9 @@ def main(stdscr):
         worst_time_image.render()
         number_of_times_image.render()
 
-        draw()
+        stdscr.clear()
+        stdscr.addstr(canvas.display)
+        stdscr.refresh()
 
         if timer_running:
             number_display.time = time.time() - solve_start_time
