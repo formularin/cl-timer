@@ -2,6 +2,7 @@ import curses
 import getpass
 import os
 import signal
+import subprocess
 import time
 
 from art import (DISCLAIMER, TIMER_BACKGROUND,
@@ -116,8 +117,8 @@ def display_stats(stdscr, solve, times, ao5s, ao12s):
     display_text(stdscr, string)
 
 
-def command_line(stdscr, background, canvas,
-        scramble_image, times, ao5s, ao12s):
+def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
+        ao12s, session_file):
     """
     Inspired by vim...
     """
@@ -146,7 +147,10 @@ def command_line(stdscr, background, canvas,
                 scramble_image.chars = char(new_scramble)
                 scramble_image.render()
         elif words[0] == 'stat':
-            display_stats(stdscr, int(words[1]), times, ao5s, ao12s)
+            try:
+                display_stats(stdscr, int(words[1]), times, ao5s, ao12s)
+            except IndexError:
+                subprocess.call(['vim', session_file])
 
 
 def main(stdscr):
@@ -291,7 +295,8 @@ def main(stdscr):
         if key == 58:  # :
             command_line(
                 stdscr, canvas.display, canvas,
-                scramble_image, times, ao5s, ao12s)
+                scramble_image, times, ao5s, ao12s,
+                session_file)
             continue
 
         if not timer_running:
