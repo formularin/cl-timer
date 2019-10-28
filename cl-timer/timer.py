@@ -36,7 +36,7 @@ settings = {
 }
 
 
-def ask_for_input(stdscr, canvas, input_line, cursor, command_line=False):
+def ask_for_input(stdscr, canvas, input_line, cursor, draw, command_line=False):
     """
     Uses graphics.InputLine object to get input from user.
     """
@@ -63,9 +63,7 @@ def ask_for_input(stdscr, canvas, input_line, cursor, command_line=False):
             cursor.hide()
             break
 
-        stdscr.clear()
-        stdscr.addstr(canvas.display)
-        stdscr.refresh()
+        draw()
 
         frame += 1
         time.sleep(0.01)
@@ -106,7 +104,7 @@ def add_zero(number):
         return ''.join(list_number)
 
 
-def command_line(stdscr, background, canvas, scramble_image):
+def command_line(stdscr, background, canvas, scramble_image, draw):
     """
     Inspired by vim...
     """
@@ -119,7 +117,7 @@ def command_line(stdscr, background, canvas, scramble_image):
             cmd_ipt = CommandInput(canvas)
             command_inputs.append(cmd_ipt)
             command = ask_for_input(
-                stdscr, canvas, cmd_ipt, Cursor(canvas), True)
+                stdscr, canvas, cmd_ipt, Cursor(canvas), draw, True)
         except ExitCommandLine:
             for c in command_inputs:
                 c.hide()
@@ -140,6 +138,20 @@ def main(stdscr):
     """
     Includes all mainloops for the app.
     """
+
+    # curses color pairs
+
+    curses.init_pair(1, curses.COLOR_WHITE, curses.COLOR_BLACK)
+    curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
+    curses.init_pair(3, curses.COLOR_GREEN, curses.COLOR_BLACK)
+
+    COLORS = {
+        'white': 1,
+        'red': 2,
+        'green': 3
+    }
+
+
 
     times = []
     ao5s = []
@@ -168,6 +180,24 @@ def main(stdscr):
     stdscr.nodelay(True)  # makes stdscr.getch() non-blocking
 
     canvas = Canvas(curses.LINES - 1, curses.COLS - 1)
+
+    def draw():
+
+        max_x = max([char.x for char in canvas.chars]) + 1
+        max_y = max([char.y for char in canvas.chars]) + 1
+
+        stdscr.clear()
+        for y in range(max_y):
+            for x in range(max_x):
+                for char in canvas.chars:
+                    if char.x == x and char.y == y:
+                        stdscr.addstr(char.char, COLORS[char.color])
+            try:
+                stdscr.addstr('\n')
+            except Exception:
+                pass
+        stdscr.refresh()
+
     cursor = Cursor(canvas)
 
     display_text(stdscr, TITLE_ART)
@@ -176,7 +206,7 @@ def main(stdscr):
     # if this is a new session, create a new file, if not, use an existing one.
 
     session_name_input = InputLine(canvas, 'session name: ')
-    session = ask_for_input(stdscr, canvas, session_name_input, cursor)
+    session = ask_for_input(stdscr, canvas, session_name_input, cursor, draw)
     
     if not os.path.isfile(f'{HOME}/.cl-timer/{session}'):
         with open(f'{HOME}/.cl-timer/{session}', 'w+') as f:
@@ -280,7 +310,7 @@ def main(stdscr):
         key = stdscr.getch()
 
         if key == 58:  # :
-            command_line(stdscr, canvas.display, canvas, scramble_image)
+            command_line(stdscr, canvas.display, canvas, scramble_image, draw)
             continue
 
         if not timer_running:
@@ -353,9 +383,7 @@ def main(stdscr):
         worst_time_image.render()
         number_of_times_image.render()
 
-        stdscr.clear()
-        stdscr.addstr(canvas.display)
-        stdscr.refresh()
+        draw()
 
         if timer_running:
             number_display.time = time.time() - solve_start_time
