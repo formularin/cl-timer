@@ -27,6 +27,12 @@ ading, and have fun!'
 STARTING_TIME = ' __     __   __\n|  |   |  | |  |\n|__| . |__| |__|'
 
 
+STATS = '\
+STATS FOR SOLVE %s\n\nTime: %s\nAverage of 5: %s\nAverage of 12: %s\n\n\nPress\
+ any key to exit'
+
+
+
 TIMER_BACKGROUND = '\
 -------------------------------------------------\n|                          \
                     |\n|                                              |\n|    \

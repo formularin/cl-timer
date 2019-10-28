@@ -4,7 +4,8 @@ import os
 import signal
 import time
 
-from art import DISCLAIMER, TIMER_BACKGROUND, TITLE_ART
+from art import (DISCLAIMER, TIMER_BACKGROUND,
+                 TITLE_ART, STATS)
 from graphics import (Canvas, Char, Cursor, Image,
                       InputLine, NumberDisplay,
                       Scramble, CommandInput)
@@ -106,7 +107,17 @@ def add_zero(number):
         return ''.join(list_number)
 
 
-def command_line(stdscr, background, canvas, scramble_image):
+def display_stats(stdscr, solve, times, ao5s, ao12s):
+    """
+    Displays to screen stats about the solve with index `solve` - 1
+    """
+    i = solve - 1
+    string = STATS % (solve, times[i], ao5s[i], ao12s[i])
+    display_text(stdscr, string)
+
+
+def command_line(stdscr, background, canvas,
+        scramble_image, times, ao5s, ao12s):
     """
     Inspired by vim...
     """
@@ -129,11 +140,13 @@ def command_line(stdscr, background, canvas, scramble_image):
         if words[0] == 'set':
             settings[words[1]] = words[2]
 
-        if words[1] in ['puzzle', 'scramble-length']:
-            new_scramble = generate_scramble(int(settings['puzzle']),
-                                        int(settings['scramble-length']))
-            scramble_image.chars = char(new_scramble)
-            scramble_image.render()
+            if words[1] in ['puzzle', 'scramble-length']:
+                new_scramble = generate_scramble(int(settings['puzzle']),
+                                            int(settings['scramble-length']))
+                scramble_image.chars = char(new_scramble)
+                scramble_image.render()
+        elif words[0] == 'stat':
+            display_stats(stdscr, int(words[1]), times, ao5s, ao12s)
 
 
 def main(stdscr):
@@ -184,7 +197,7 @@ def main(stdscr):
     session_file = f'{HOME}/.cl-timer/{session}'
     
     with open(session_file, 'r') as f:
-        time_lines = [line.split('\t') for line in f.read().split('\n')]
+        time_lines = [line.split('\t') for line in f.read().split('\n')][:-1]
 
     for line in time_lines:
         times.append(line[0])
@@ -276,7 +289,9 @@ def main(stdscr):
         key = stdscr.getch()
 
         if key == 58:  # :
-            command_line(stdscr, canvas.display, canvas, scramble_image)
+            command_line(
+                stdscr, canvas.display, canvas,
+                scramble_image, times, ao5s, ao12s)
             continue
 
         if not timer_running:
