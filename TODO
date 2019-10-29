@@ -7,3 +7,5 @@ TODO
    - delete, plus 2, dnf
    - worst averages
    - decimal place
+
+THERE IS A BUG IN WRITING TO FILES WHEN CHANGING SESSIONS FIX IT FAST

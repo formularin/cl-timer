@@ -130,60 +130,6 @@ def display_stats(stdscr, solve, times, ao5s, ao12s, scrambles):
     display_text(stdscr, string)
 
 
-def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
-        ao12s, session, session_file, session_name_image, scrambles):
-    """
-    Inspired by vim...
-    """
-
-    bg = Image(canvas, 0, 0, char(background))
-    command_inputs = []
-
-    while True:
-        try:
-            cmd_ipt = CommandInput(canvas)
-            command_inputs.append(cmd_ipt)
-            command = ask_for_input(
-                stdscr, canvas, cmd_ipt, Cursor(canvas), True)
-        except ExitCommandLine:
-            for c in command_inputs:
-                c.hide()
-            return
-
-        words = command.split(' ')
-        if words[0] == 'set':
-            settings[words[1]] = words[2]
-
-            if words[1] in ['puzzle', 'scramble-length']:
-                new_scramble = generate_scramble(int(settings['puzzle']),
-                                            int(settings['scramble-length']))
-                scramble_image.chars = char(new_scramble)
-                scramble_image.render()
-        elif words[0] == 'info':
-            try:
-                display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
-            except IndexError:
-                subprocess.call(['vim', session_file])
-        elif words[0] == 'session':
-            session.string = words[1]
-            session_file.string = f"{HOME}/.cl-timer/{words[1]}"
-            session_name_image.chars = char(words[1])
-            session_name_image.render()
-
-            if not os.path.isfile(session_file.string):
-                with open(session_file.string, 'w+') as f:
-                    pass
-
-            with open(session_file.string, 'r') as f:
-                time_lines = [line.split('\t') for line in f.read().split('\n')][:-1]
-
-            for line in time_lines:
-                times.append(line[0])
-                ao5s.append(line[1])
-                ao12s.append(line[2])
-                scrambles.append(line[3])
-
-
 def main(stdscr):
     """
     Includes all mainloops for the app.
@@ -296,6 +242,101 @@ def main(stdscr):
             return ""
         return worst
 
+    def update_stats():
+        ao5 = calculate_average(len(times), 5)
+        ao5s.append(ao5)
+        ao5_image.chars = char(f'AO5: {ao5}')
+        ao12 = calculate_average(len(times), 12)
+        ao12s.append(ao12)
+        ao12_image.chars = char(f'AO12: {ao12}')
+        best_ao5 = get_best_average(5)
+        best_ao5_image.chars = char(f'Best AO5: {best_ao5}')
+        best_ao12 = get_best_average(12)
+        best_ao12_image.chars = char(f'Best AO12: {best_ao12}')
+        best_time = get_best_time()
+        best_time_image.chars = char(f'Best time: {best_time}')
+        worst_time = get_worst_time()
+        worst_time_image.chars = char(f'Worst time: {worst_time}')
+        number_of_times_image.chars = char(f'Number of Times: {len(times)}')
+
+    def command_line():
+        """
+        Inspired by vim...
+        """
+
+        bg = Image(canvas, 0, 0, char(canvas.display))
+        command_inputs = []
+
+        while True:
+            try:
+                cmd_ipt = CommandInput(canvas)
+                command_inputs.append(cmd_ipt)
+                command = ask_for_input(
+                    stdscr, canvas, cmd_ipt, Cursor(canvas), True)
+            except ExitCommandLine:
+                for c in command_inputs:
+                    c.hide()
+                return
+
+            words = command.split(' ')
+            if words[0] == 'set':
+                settings[words[1]] = words[2]
+
+                if words[1] in ['puzzle', 'scramble-length']:
+                    new_scramble = generate_scramble(int(settings['puzzle']),
+                                                int(settings['scramble-length']))
+                    scramble_image.chars = char(new_scramble)
+                    scramble_image.render()
+            elif words[0] == 'info':
+                try:
+                    display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
+                except IndexError:
+                    subprocess.call(['vim', session_file])
+            elif words[0] == 'session':
+                
+                # write to file
+                if times != [] and session_file.string != "":
+                    lines = ['\t'.join([t, a5, a12, scramble]) for t, a5, a12, scramble in zip(
+                        *[[add_zero(i) for i in lst] if lst is not scrambles else lst
+                        for lst in [times, ao5s, ao12s, scrambles]])]
+                    with open(session_file.string, 'w') as f:
+                        f.write('\n'.join(lines))
+
+                session.string = words[1]
+                session_file.string = f"{HOME}/.cl-timer/{words[1]}"
+                session_name_image.chars = char(words[1])
+                session_name_image.render()
+
+                if not os.path.isfile(session_file.string):
+                    with open(session_file.string, 'w+') as f:
+                        pass
+
+                with open(session_file.string, 'r') as f:
+                    time_lines = [line.split('\t') for line in f.read().split('\n')][:-1]
+
+                s = len(times)
+
+                for lst in [times, ao5s, ao12s, scrambles]:
+                    for _ in range(s):
+                        lst.pop(0)
+
+                for line in time_lines:
+                    times.append(line[0])
+                    ao5s.append(line[1])
+                    ao12s.append(line[2])
+                    scrambles.append(line[3])
+
+                update_stats()
+
+                ao5_image.render()
+                ao12_image.render()
+                best_ao5_image.render()
+                best_ao12_image.render()
+                best_time_image.render()
+                worst_time_image.render()
+                number_of_times_image.render()
+                
+                
     session_name_image = Image(canvas, 0, 0, char(session.string))
     scramble_image = Scramble(canvas, 0, 2, char(
         generate_scramble(int(settings['puzzle']),
@@ -327,11 +368,7 @@ def main(stdscr):
         key = stdscr.getch()
 
         if key == 58:  # :
-            command_line(
-                stdscr, canvas.display, canvas,
-                scramble_image, times, ao5s,
-                ao12s, session, session_file,
-                session_name_image, scrambles)
+            command_line()
             continue
 
         if not timer_running:
@@ -374,22 +411,7 @@ def main(stdscr):
                 scrambles.append(new_scramble)
                 scramble_image.chars = char(new_scramble)
 
-                # calculate stats and update images on screen
-                ao5 = calculate_average(len(times), 5)
-                ao5s.append(ao5)
-                ao5_image.chars = char(f'AO5: {ao5}')
-                ao12 = calculate_average(len(times), 12)
-                ao12s.append(ao12)
-                ao12_image.chars = char(f'AO12: {ao12}')
-                best_ao5 = get_best_average(5)
-                best_ao5_image.chars = char(f'Best AO5: {best_ao5}')
-                best_ao12 = get_best_average(12)
-                best_ao12_image.chars = char(f'Best AO12: {best_ao12}')
-                best_time = get_best_time()
-                best_time_image.chars = char(f'Best time: {best_time}')
-                worst_time = get_worst_time()
-                worst_time_image.chars = char(f'Worst time: {worst_time}')
-                number_of_times_image.chars = char(f'Number of Times: {len(times)}')
+                update_stats()
 
         session_name_image.render()
         scramble_image.render()
