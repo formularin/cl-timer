@@ -159,7 +159,7 @@ def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
                                             int(settings['scramble-length']))
                 scramble_image.chars = char(new_scramble)
                 scramble_image.render()
-        elif words[0] == 'stat':
+        elif words[0] == 'info':
             try:
                 display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
             except IndexError:
