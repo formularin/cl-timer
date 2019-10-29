@@ -121,17 +121,17 @@ def add_zero(number):
         return ''.join(list_number)
 
 
-def display_stats(stdscr, solve, times, ao5s, ao12s):
+def display_stats(stdscr, solve, times, ao5s, ao12s, scrambles):
     """
     Displays to screen stats about the solve with index `solve` - 1
     """
     i = solve - 1
-    string = STATS % (solve, times[i], ao5s[i], ao12s[i])
+    string = STATS % (solve, times[i], ao5s[i], ao12s[i], scrambles[i])
     display_text(stdscr, string)
 
 
 def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
-        ao12s, session, session_file, session_name_image):
+        ao12s, session, session_file, session_name_image, scrambles):
     """
     Inspired by vim...
     """
@@ -161,7 +161,7 @@ def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
                 scramble_image.render()
         elif words[0] == 'stat':
             try:
-                display_stats(stdscr, int(words[1]), times, ao5s, ao12s)
+                display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
             except IndexError:
                 subprocess.call(['vim', session_file])
         elif words[0] == 'session':
@@ -181,6 +181,7 @@ def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
                 times.append(line[0])
                 ao5s.append(line[1])
                 ao12s.append(line[2])
+                scrambles.append(line[3])
 
 
 def main(stdscr):
@@ -191,6 +192,7 @@ def main(stdscr):
     times = []
     ao5s = []
     ao12s = []
+    scrambles = []
     session_file = ""
     def signal_handler(sig, frame):
         """
@@ -200,8 +202,9 @@ def main(stdscr):
         (saving file interaction to the end saves time during frames.)
         """
         if times != [] and session_file.string != "":
-            lines = ['\t'.join([t, a5, a12]) for t, a5, a12 in zip(
-                *[[add_zero(i) for i in lst] for lst in [times, ao5s, ao12s]])]
+            lines = ['\t'.join([t, a5, a12, scramble]) for t, a5, a12, scramble in zip(
+                *[[add_zero(i) for i in lst] if lst is not scrambles else lst
+                for lst in [times, ao5s, ao12s, scrambles]])]
             with open(session_file.string, 'w') as f:
                 f.write('\n'.join(lines))
         raise ExitException()
@@ -237,6 +240,7 @@ def main(stdscr):
         times.append(line[0])
         ao5s.append(line[1])
         ao12s.append(line[2])
+        scrambles.append(line[3])
 
     display_text(stdscr, DISCLAIMER)
 
@@ -325,8 +329,9 @@ def main(stdscr):
         if key == 58:  # :
             command_line(
                 stdscr, canvas.display, canvas,
-                scramble_image, times, ao5s, ao12s,
-                session, session_file, session_name_image)
+                scramble_image, times, ao5s,
+                ao12s, session, session_file,
+                session_name_image, scrambles)
             continue
 
         if not timer_running:
@@ -366,6 +371,7 @@ def main(stdscr):
                 # generate new scramble and update scramble_image
                 new_scramble = generate_scramble(int(settings['puzzle']),
                                             int(settings['scramble-length']))
+                scrambles.append(new_scramble)
                 scramble_image.chars = char(new_scramble)
 
                 # calculate stats and update images on screen
