@@ -23,6 +23,19 @@ except FileExistsError:
     pass
 
 
+class MutableString:
+    def __init__(self, string):
+        self._string = string
+
+    @property
+    def string(self):
+        return self._string
+
+    @string.setter
+    def string(self, new_string):
+        self._string = new_string
+
+
 class ExitException(Exception):
     """
     Tells the program when to exit
@@ -118,7 +131,7 @@ def display_stats(stdscr, solve, times, ao5s, ao12s):
 
 
 def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
-        ao12s, session_file):
+        ao12s, session, session_file, session_name_image):
     """
     Inspired by vim...
     """
@@ -151,6 +164,23 @@ def command_line(stdscr, background, canvas, scramble_image, times, ao5s,
                 display_stats(stdscr, int(words[1]), times, ao5s, ao12s)
             except IndexError:
                 subprocess.call(['vim', session_file])
+        elif words[0] == 'session':
+            session.string = words[1]
+            session_file.string = f"{HOME}/.cl-timer/{words[1]}"
+            session_name_image.chars = char(words[1])
+            session_name_image.render()
+
+            if not os.path.isfile(session_file.string):
+                with open(session_file.string, 'w+') as f:
+                    pass
+
+            with open(session_file.string, 'r') as f:
+                time_lines = [line.split('\t') for line in f.read().split('\n')][:-1]
+
+            for line in time_lines:
+                times.append(line[0])
+                ao5s.append(line[1])
+                ao12s.append(line[2])
 
 
 def main(stdscr):
@@ -169,10 +199,10 @@ def main(stdscr):
         Writes times to session file
         (saving file interaction to the end saves time during frames.)
         """
-        if times != [] and session_file != "":
+        if times != [] and session_file.string != "":
             lines = ['\t'.join([t, a5, a12]) for t, a5, a12 in zip(
                 *[[add_zero(i) for i in lst] for lst in [times, ao5s, ao12s]])]
-            with open(session_file, 'w') as f:
+            with open(session_file.string, 'w') as f:
                 f.write('\n'.join(lines))
         raise ExitException()
 
@@ -193,14 +223,14 @@ def main(stdscr):
     # if this is a new session, create a new file, if not, use an existing one.
 
     session_name_input = InputLine(canvas, 'session name: ')
-    session = ask_for_input(stdscr, canvas, session_name_input, cursor)
+    session = MutableString(ask_for_input(stdscr, canvas, session_name_input, cursor))
     
-    if not os.path.isfile(f'{HOME}/.cl-timer/{session}'):
-        with open(f'{HOME}/.cl-timer/{session}', 'w+') as f:
+    if not os.path.isfile(f'{HOME}/.cl-timer/{session.string}'):
+        with open(f'{HOME}/.cl-timer/{session.string}', 'w+') as f:
             pass
-    session_file = f'{HOME}/.cl-timer/{session}'
+    session_file = MutableString(f'{HOME}/.cl-timer/{session.string}')
     
-    with open(session_file, 'r') as f:
+    with open(session_file.string, 'r') as f:
         time_lines = [line.split('\t') for line in f.read().split('\n')][:-1]
 
     for line in time_lines:
@@ -262,7 +292,7 @@ def main(stdscr):
             return ""
         return worst
 
-    session_name_image = Image(canvas, 0, 0, char(session))
+    session_name_image = Image(canvas, 0, 0, char(session.string))
     scramble_image = Scramble(canvas, 0, 2, char(
         generate_scramble(int(settings['puzzle']),
         int(settings['scramble-length']))))
@@ -296,7 +326,7 @@ def main(stdscr):
             command_line(
                 stdscr, canvas.display, canvas,
                 scramble_image, times, ao5s, ao12s,
-                session_file)
+                session, session_file, session_name_image)
             continue
 
         if not timer_running:
