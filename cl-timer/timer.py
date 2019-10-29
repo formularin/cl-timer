@@ -1,6 +1,6 @@
 import curses
-import getpass
 import os
+from pathlib import Path
 import signal
 import subprocess
 import time
@@ -15,7 +15,7 @@ from scramble import generate_scramble
 
 char = lambda string: Char.fromstring(string)
 
-HOME = f'/Users/{getpass.getuser()}'
+HOME = str(Path.home())
 
 try:
     os.mkdir(f'{HOME}/.cl-timer')
@@ -291,7 +291,7 @@ def main(stdscr):
                 try:
                     display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
                 except IndexError:
-                    subprocess.call(['vim', session_file])
+                    subprocess.call(['vim', session_file.string])
             elif words[0] == 'session':
                 
                 # write to file
