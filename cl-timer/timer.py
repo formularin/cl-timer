@@ -202,12 +202,7 @@ def main(stdscr):
 
             # calculate average and add zero if it doesn't go to 100ths place.
             
-            # list of chars of the string version of average rounded to nearest hundredth
-            average_chars = list(str(round(sum(latest_average) / (length - 2), 2)))
-            if len(average_chars[average_chars.index('.'):]) < 2:
-                average_chars.append('0')
-            
-            return ''.join(average_chars)
+            return add_zero(round(sum(latest_average) / len(latest_average), 2))
 
     def get_session_mean():
         """
@@ -265,6 +260,16 @@ def main(stdscr):
         session_mean_image.displayed_chars = char(f'Session Mean: {session_mean}')
 
         return ao5, ao12
+
+    def render_stats():
+        ao5_image.render()
+        ao12_image.render()
+        best_ao5_image.render()
+        best_ao12_image.render()
+        best_time_image.render()
+        worst_time_image.render()
+        number_of_times_image.render()
+        session_mean_image.render()
 
     def command_line():
         """
@@ -326,15 +331,7 @@ def main(stdscr):
                     scrambles.append(line[3])
 
                 update_stats()
-
-                ao5_image.render()
-                ao12_image.render()
-                best_ao5_image.render()
-                best_ao12_image.render()
-                best_time_image.render()
-                worst_time_image.render()
-                number_of_times_image.render()
-                session_mean_image.render()
+                render_stats()
                 
                 
     session_name_image = Image(canvas, 0, 0, char(session.string))
@@ -426,14 +423,7 @@ def main(stdscr):
         timer_background.render()
         number_display.render()
         
-        ao5_image.render()
-        ao12_image.render()
-        best_ao5_image.render()
-        best_ao12_image.render()
-        best_time_image.render()
-        worst_time_image.render()
-        number_of_times_image.render()
-        session_mean_image.render()
+        render_stats()
 
         stdscr.clear()
         stdscr.addstr(canvas.display)
