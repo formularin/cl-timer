@@ -445,4 +445,4 @@ if __name__ == '__main__':
     try:
         curses.wrapper(main)
     except ExitException:
-        pass
+        subprocess.call(['clear'])
