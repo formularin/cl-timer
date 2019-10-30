@@ -209,6 +209,15 @@ def main(stdscr):
             
             return ''.join(average_chars)
 
+    def get_session_mean():
+        """
+        Returns mean of all solves in session
+        """
+        try:
+            return add_zero(round(sum([float(t) for t in times]) / len(times), 2))
+        except ZeroDivisionError:
+            return ""
+
     def get_best_average(length):
         """
         Returns best average of `length` in session
@@ -252,6 +261,8 @@ def main(stdscr):
         worst_time = get_worst_time()
         worst_time_image.displayed_chars = char(f'Worst time: {worst_time}')
         number_of_times_image.displayed_chars = char(f'Number of Times: {len(times)}')
+        session_mean = get_session_mean()
+        session_mean_image.displayed_chars = char(f'Session Mean: {session_mean}')
 
         return ao5, ao12
 
@@ -314,7 +325,7 @@ def main(stdscr):
                     ao12s.append(line[2])
                     scrambles.append(line[3])
 
-                ao5, ao12 = update_stats()
+                update_stats()
 
                 ao5_image.render()
                 ao12_image.render()
@@ -323,6 +334,7 @@ def main(stdscr):
                 best_time_image.render()
                 worst_time_image.render()
                 number_of_times_image.render()
+                session_mean_image.render()
                 
                 
     session_name_image = Image(canvas, 0, 0, char(session.string))
@@ -340,6 +352,7 @@ def main(stdscr):
     best_time_image = Image(canvas, 51, 8, char(f'Best time: {get_best_time()}'))
     worst_time_image = Image(canvas, 51, 9, char(f'Worst time: {get_worst_time()}'))
     number_of_times_image = Image(canvas, 51, 10, char(f'Number of Times: {len(times)}'))
+    session_mean_image = Image(canvas, 51, 11, char(f'Session Mean: {get_session_mean()}'))
 
     timer_running = False
     delay = 0  # how far behind the program is
@@ -412,7 +425,7 @@ def main(stdscr):
         
         timer_background.render()
         number_display.render()
-
+        
         ao5_image.render()
         ao12_image.render()
         best_ao5_image.render()
@@ -420,6 +433,7 @@ def main(stdscr):
         best_time_image.render()
         worst_time_image.render()
         number_of_times_image.render()
+        session_mean_image.render()
 
         stdscr.clear()
         stdscr.addstr(canvas.display)
