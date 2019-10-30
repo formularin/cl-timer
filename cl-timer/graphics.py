@@ -74,6 +74,16 @@ class Image:
         self.y = y
         self.chars = chars
 
+    @property
+    def displayed_chars(self):
+        return self.chars
+
+    @displayed_chars.setter
+    def displayed_chars(self, chars):
+        for char in self.chars:
+            self.canvas.replace(char.x + self.x, char.y + self.y, " ")
+        self.chars = chars
+
     def render(self):
         """
         Alter canvas display to update current state of self.

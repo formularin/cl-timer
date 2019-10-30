@@ -1,6 +1,5 @@
 TODO
 
-write to file all the time
 fix exit after opening vim
 
  - commands
@@ -10,5 +9,3 @@ fix exit after opening vim
    - delete, plus 2, dnf
    - worst averages
    - decimal place
-
-THERE IS A BUG IN WRITING TO FILES WHEN CHANGING SESSIONS FIX IT FAST

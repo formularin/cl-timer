@@ -134,12 +134,6 @@ def main(stdscr):
     """
     Includes all mainloops for the app.
     """
-
-    times = []
-    ao5s = []
-    ao12s = []
-    scrambles = []
-    session_file = ""
     def signal_handler(sig, frame):
         """
         What to do in case of KeyboardInterrupt
@@ -147,12 +141,6 @@ def main(stdscr):
         Writes times to session file
         (saving file interaction to the end saves time during frames.)
         """
-        if times != [] and session_file.string != "":
-            lines = ['\t'.join([t, a5, a12, scramble]) for t, a5, a12, scramble in zip(
-                *[[add_zero(i) for i in lst] if lst is not scrambles else lst
-                for lst in [times, ao5s, ao12s, scrambles]])]
-            with open(session_file.string, 'w') as f:
-                f.write('\n'.join(lines))
         raise ExitException()
 
     signal.signal(signal.SIGINT, signal_handler)
@@ -174,6 +162,12 @@ def main(stdscr):
     session_name_input = InputLine(canvas, 'session name: ')
     session = MutableString(ask_for_input(stdscr, canvas, session_name_input, cursor))
     
+    times = []
+    ao5s = []
+    ao12s = []
+    scrambles = []
+    session_file = ""
+
     if not os.path.isfile(f'{HOME}/.cl-timer/{session.string}'):
         with open(f'{HOME}/.cl-timer/{session.string}', 'w+') as f:
             pass
@@ -245,19 +239,21 @@ def main(stdscr):
     def update_stats():
         ao5 = calculate_average(len(times), 5)
         ao5s.append(ao5)
-        ao5_image.chars = char(f'AO5: {ao5}')
+        ao5_image.displayed_chars = char(f'AO5: {ao5}')
         ao12 = calculate_average(len(times), 12)
         ao12s.append(ao12)
-        ao12_image.chars = char(f'AO12: {ao12}')
+        ao12_image.displayed_chars = char(f'AO12: {ao12}')
         best_ao5 = get_best_average(5)
-        best_ao5_image.chars = char(f'Best AO5: {best_ao5}')
+        best_ao5_image.displayed_chars = char(f'Best AO5: {best_ao5}')
         best_ao12 = get_best_average(12)
-        best_ao12_image.chars = char(f'Best AO12: {best_ao12}')
+        best_ao12_image.displayed_chars = char(f'Best AO12: {best_ao12}')
         best_time = get_best_time()
-        best_time_image.chars = char(f'Best time: {best_time}')
+        best_time_image.displayed_chars = char(f'Best time: {best_time}')
         worst_time = get_worst_time()
-        worst_time_image.chars = char(f'Worst time: {worst_time}')
-        number_of_times_image.chars = char(f'Number of Times: {len(times)}')
+        worst_time_image.displayed_chars = char(f'Worst time: {worst_time}')
+        number_of_times_image.displayed_chars = char(f'Number of Times: {len(times)}')
+
+        return ao5, ao12
 
     def command_line():
         """
@@ -285,7 +281,7 @@ def main(stdscr):
                 if words[1] in ['puzzle', 'scramble-length']:
                     new_scramble = generate_scramble(int(settings['puzzle']),
                                                 int(settings['scramble-length']))
-                    scramble_image.chars = char(new_scramble)
+                    scramble_image.displayed_chars = char(new_scramble)
                     scramble_image.render()
             elif words[0] == 'info':
                 try:
@@ -293,18 +289,10 @@ def main(stdscr):
                 except IndexError:
                     subprocess.call(['vim', session_file.string])
             elif words[0] == 'session':
-                
-                # write to file
-                if times != [] and session_file.string != "":
-                    lines = ['\t'.join([t, a5, a12, scramble]) for t, a5, a12, scramble in zip(
-                        *[[add_zero(i) for i in lst] if lst is not scrambles else lst
-                        for lst in [times, ao5s, ao12s, scrambles]])]
-                    with open(session_file.string, 'w') as f:
-                        f.write('\n'.join(lines))
 
                 session.string = words[1]
                 session_file.string = f"{HOME}/.cl-timer/{words[1]}"
-                session_name_image.chars = char(words[1])
+                session_name_image.displayed_chars = char(words[1])
                 session_name_image.render()
 
                 if not os.path.isfile(session_file.string):
@@ -326,7 +314,7 @@ def main(stdscr):
                     ao12s.append(line[2])
                     scrambles.append(line[3])
 
-                update_stats()
+                ao5, ao12 = update_stats()
 
                 ao5_image.render()
                 ao12_image.render()
@@ -409,9 +397,15 @@ def main(stdscr):
                 new_scramble = generate_scramble(int(settings['puzzle']),
                                             int(settings['scramble-length']))
                 scrambles.append(new_scramble)
-                scramble_image.chars = char(new_scramble)
+                scramble_image.displayed_chars = char(new_scramble)
 
-                update_stats()
+                ao5, ao12 = update_stats()
+
+                with open(session_file.string, 'a') as f:
+                    if len(times) == 1:
+                        f.write(f'{add_zero(t)}\t{ao5}\t{ao12}\t{new_scramble}')
+                    else:
+                        f.write(f'\n{add_zero(t)}\t{ao5}\t{ao12}\t{new_scramble}')
 
         session_name_image.render()
         scramble_image.render()
