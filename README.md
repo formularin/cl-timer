@@ -18,6 +18,10 @@ There will most likely be pip installation once the first stable version is rele
 
 ## Usage
 
+# IMPORTANT
+
+**The way measure holding the spacebar down then releasing it as one keypress requires a specific key-repeat. On macos, go to System Preferences -> Keyboard. Move the sliders for "Key Repeat" and "Delay Until Repeat" to the side labeled "short" as far as possible.**
+
 ### Basic Features
 
 Type the name of the session once prompted to, and type the name of the session.
@@ -30,6 +34,8 @@ The times are saved automatically every time a new solve is completed.
 Press ^c at any time to exit the program
 
 ### Commands
+
+Press ":", type the command, and press "enter". The effects of the command should show up immediately. Press "escape" to exit the command input.
 
 #### `set`
 
