@@ -1,9 +1,8 @@
 TODO
 
+ - save session settings
+
  - commands
    - graph using clplot
-   - enter different session
-   - scramble length
    - delete, plus 2, dnf
-   - worst averages
    - decimal place
