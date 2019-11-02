@@ -1,4 +1,5 @@
 import curses
+import json
 import os
 from pathlib import Path
 import signal
@@ -168,10 +169,10 @@ def main(stdscr):
     scrambles = []
     session_file = ""
 
-    if not os.path.isfile(f'{HOME}/.cl-timer/{session.string}'):
-        with open(f'{HOME}/.cl-timer/{session.string}', 'w+') as f:
-            pass
     session_file = MutableString(f'{HOME}/.cl-timer/{session.string}')
+    if not os.path.isfile(session_file.string):
+        with open(session_file.string, 'w+') as f:
+            pass
     
     with open(session_file.string, 'r') as f:
         time_lines = [line.split('\t') for line in f.read().split('\n')][:-1]
@@ -181,6 +182,15 @@ def main(stdscr):
         ao5s.append(line[1])
         ao12s.append(line[2])
         scrambles.append(line[3])
+
+    settings_file = MutableString(f'{session_file.string}-settings.json')
+    if not os.path.isfile(settings_file.string):
+        with open(settings_file.string, 'w+') as f:
+            json.dump(settings, f)
+    
+    with open(settings_file.string, 'r') as f:
+        for key, value in json.load(f).items():
+            settings[key] = value
 
     display_text(stdscr, DISCLAIMER)
 
@@ -299,6 +309,10 @@ def main(stdscr):
                                                 int(settings['scramble-length']))
                     scramble_image.displayed_chars = char(new_scramble)
                     scramble_image.render()
+
+                with open(settings_file.string, 'w') as f:
+                    json.dump(settings, f)
+                    
             elif words[0] == 'info':
                 try:
                     display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
