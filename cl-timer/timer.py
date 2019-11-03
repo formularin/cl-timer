@@ -127,7 +127,7 @@ def add_zero(number):
         return ''.join(list_number)
 
 
-def convert_to_float(lst):
+def convert_to_float(lst, purpose):
     """
     Returns list of all float-convertable values of `lst`,
     along with length of new list
@@ -135,9 +135,16 @@ def convert_to_float(lst):
     float_times = []
     len_times = 0
     for t in lst:
-        if (str(t)[:3] != 'DNF') and (t != ''):
+        if (str(t)[:3] != 'DNF') and (t != '') and (str(t)[-1] != '+'):
             float_times.append(float(t))
             len_times += 1
+        elif str(t)[-1] == '+':
+            if purpose == 'average':
+                float_times.append(float(t[:-1]))
+                len_times += 1
+            elif purpose == 'single':
+                float_times.append(t)
+                len_times += 1
     return float_times, len_times
 
 
@@ -196,7 +203,8 @@ def main(stdscr):
     with open(session_file.string, 'r') as f:
         time_lines = [line.split('\t') for line in f.read().split('\n')]
 
-    time_lines.remove([''])
+    if [''] in time_lines:
+        time_lines.remove([''])
 
     for line in time_lines:
         times.append(line[0])
@@ -234,7 +242,7 @@ def main(stdscr):
 
     def dnf():
         """
-        Flags solve at index `solve` as DNF
+        Flags latest solve as DNF
         """
         # update `times`
         solve_time = times[-1]
@@ -245,7 +253,29 @@ def main(stdscr):
         # update session file
         with open(session_file.string, 'r') as f:
             lines = [line.split('\t') for line in f.read().split('\n')]
+        if [''] in lines:
+            lines.remove([''])
         lines[-1][0] = f'DNF({solve_time})'
+        with open(session_file.string, 'w') as f:
+            f.write('\n'.join(['\t'.join(line) for line in lines]))
+
+    def plus_two():
+        """
+        Adds two to the value of the latest solves,
+        while also marking it as a plus two
+        """
+        # udpate `times`
+        solve_time = times[-1]
+        times[-1] = add_zero(round(float(solve_time) + 2, 2)) + '+'
+        ao5s.pop(-1)
+        ao12s.pop(-1)
+
+        # update session file
+        with open(session_file.string, 'r') as f:
+            lines = [line.split('\t') for line in f.read().split('\n')]
+        if [''] in lines:
+            lines.remove([''])
+        lines[-1][0] = add_zero(round(float(solve_time) + 2, 2)) + '+'
         with open(session_file.string, 'w') as f:
             f.write('\n'.join(['\t'.join(line) for line in lines]))
         
@@ -277,7 +307,7 @@ def main(stdscr):
         Returns mean of all solves in session
         """
         try:
-            float_times, len_times = convert_to_float(times)
+            float_times, len_times = convert_to_float(times, 'average')
             return add_zero(round(sum(float_times) / len_times, 2))
         except ZeroDivisionError:
             return ""
@@ -297,9 +327,11 @@ def main(stdscr):
 
     def get_best_time():
         try:
-            float_times, _ = convert_to_float(times)
-            logging.info(float_times)
-            best = add_zero(min(float_times))
+            converted_times, _ = convert_to_float(times, 'single')
+            float_times = [float(t[:-1]) for t in converted_times if isinstance(t, str)]
+            best = converted_times[float_times.index(min(float_times))]
+            if isinstance(best, float):
+                return add_zero(best)
         except ValueError as e:
             logging.info(str(e))
             return ""
@@ -307,8 +339,11 @@ def main(stdscr):
 
     def get_worst_time():
         try:
-            float_times, _ = convert_to_float(times)
-            worst = add_zero(max(float_times))
+            converted_times, _ = convert_to_float(times, 'single')
+            float_times = [float(t[:-1]) for t in converted_times if isinstance(t, str)]
+            worst = converted_times[float_times.index(max(float_times))]
+            if isinstance(worst, float):
+                return add_zero(worst)
         except ValueError as e:
             logging.info(str(e))
             return ""
@@ -418,6 +453,11 @@ def main(stdscr):
 
             elif words[0] == 'dnf':
                 dnf()
+                update_stats()
+                render_stats()
+
+            elif words[0] == 'plus-two':
+                plus_two()
                 update_stats()
                 render_stats()
                 
