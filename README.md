@@ -77,6 +77,29 @@ When called without an argument, opens file (read-only) containing all times, av
 
 Switches to session name. Same functionality as session input on startup.
 
+#### `del`
+
+*deletes time*
+
+##### Arg 1: solve
+
+e. g. `2` means second solve in session
+
+Removes all traces of solve at index `solve`
+
+#### `dnf`
+
+*marks most recent solve as DNF*
+
+Treats solve as DNFs are treated by other timers and by WCA regulations.
+Solve is now represented as f"DNF({time})"
+
+#### `plus-two`
+
+*marks most recent solve as "plus two"*
+
+Treats solve as plus twos are treated by other timers and by WCA regulations.
+Solve is now represented as f"{time + 2}+"
 
 ## System Requirements and Dependencies
 
