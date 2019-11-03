@@ -194,6 +194,23 @@ def main(stdscr):
 
     display_text(stdscr, DISCLAIMER)
 
+    def delete(solve):
+        """
+        Removes all records of solve at index `solve`
+        """
+        # remove from lists of data
+        times.pop(solve - 1)
+        ao5s.pop(solve - 1)
+        ao12s.pop(solve - 1)
+        scrambles.pop(solve - 1)
+
+        # remove from session file
+        with open(session_file.string, 'r') as f:
+            lines = f.read().split('\n')
+        lines.pop(solve - 1)
+        with open(session_file.string, 'w') as f:
+            f.write('\n'.join(lines))
+
     def calculate_average(solve, length):
         """
         Returns average of `length` during `solve`
@@ -344,6 +361,11 @@ def main(stdscr):
                     ao12s.append(line[2])
                     scrambles.append(line[3])
 
+                update_stats()
+                render_stats()
+            
+            elif words[0] == 'del':
+                delete(int(words[1]))
                 update_stats()
                 render_stats()
                 
