@@ -34,7 +34,7 @@ STATS FOR SOLVE %s\n\nTime: %s\nAverage of 5: %s\nAverage of 12: %s\nScramble:\
 
 
 TIMER_BACKGROUND = '\
--------------------------------------------------\n|                          \
+------------------------------------------------\n|                          \
                     |\n|                                              |\n|    \
                                           |\n|                                \
               |\n|                                              |\n|          \
