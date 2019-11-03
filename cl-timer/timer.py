@@ -175,7 +175,7 @@ def main(stdscr):
             pass
     
     with open(session_file.string, 'r') as f:
-        time_lines = [line.split('\t') for line in f.read().split('\n')][:-1]
+        time_lines = [line.split('\t') for line in f.read().split('\n')]
 
     for line in time_lines:
         times.append(line[0])
