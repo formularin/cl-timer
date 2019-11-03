@@ -14,6 +14,11 @@ from graphics import (Canvas, Char, Cursor, Image,
 from scramble import generate_scramble
 
 
+import logging
+
+logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
+
+
 char = lambda string: Char.fromstring(string)
 
 HOME = str(Path.home())
@@ -122,6 +127,20 @@ def add_zero(number):
         return ''.join(list_number)
 
 
+def convert_to_float(lst):
+    """
+    Returns list of all float-convertable values of `lst`,
+    along with length of new list
+    """
+    float_times = []
+    len_times = 0
+    for t in lst:
+        if (str(t)[:3] != 'DNF') and (t != ''):
+            float_times.append(float(t))
+            len_times += 1
+    return float_times, len_times
+
+
 def display_stats(stdscr, solve, times, ao5s, ao12s, scrambles):
     """
     Displays to screen stats about the solve with index `solve` - 1
@@ -177,6 +196,8 @@ def main(stdscr):
     with open(session_file.string, 'r') as f:
         time_lines = [line.split('\t') for line in f.read().split('\n')]
 
+    time_lines.remove([''])
+
     for line in time_lines:
         times.append(line[0])
         ao5s.append(line[1])
@@ -211,6 +232,23 @@ def main(stdscr):
         with open(session_file.string, 'w') as f:
             f.write('\n'.join(lines))
 
+    def dnf():
+        """
+        Flags solve at index `solve` as DNF
+        """
+        # update `times`
+        solve_time = times[-1]
+        times[-1] = f'DNF({solve_time})'
+        ao5s.pop(-1)
+        ao12s.pop(-1)
+
+        # update session file
+        with open(session_file.string, 'r') as f:
+            lines = [line.split('\t') for line in f.read().split('\n')]
+        lines[-1][0] = f'DNF({solve_time})'
+        with open(session_file.string, 'w') as f:
+            f.write('\n'.join(['\t'.join(line) for line in lines]))
+        
     def calculate_average(solve, length):
         """
         Returns average of `length` during `solve`
@@ -223,8 +261,11 @@ def main(stdscr):
             return ''
         else:
             latest_average = times[solve - length:]  # list of last `length` solves
-            latest_average = [float(i) for i in latest_average]
-            latest_average.remove(max(latest_average))
+            latest_average, _ = convert_to_float(latest_average)
+            if len(latest_average) < 4:
+                return 'DNF'
+            if len(latest_average) == 4:
+                latest_average.remove(max(latest_average))
             latest_average.remove(min(latest_average))
 
             # calculate average and add zero if it doesn't go to 100ths place.
@@ -236,7 +277,8 @@ def main(stdscr):
         Returns mean of all solves in session
         """
         try:
-            return add_zero(round(sum([float(t) for t in times]) / len(times), 2))
+            float_times, len_times = convert_to_float(times)
+            return add_zero(round(sum(float_times) / len_times, 2))
         except ZeroDivisionError:
             return ""
 
@@ -255,15 +297,20 @@ def main(stdscr):
 
     def get_best_time():
         try:
-            best = add_zero(min([float(i) for i in times]))
-        except ValueError:
+            float_times, _ = convert_to_float(times)
+            logging.info(float_times)
+            best = add_zero(min(float_times))
+        except ValueError as e:
+            logging.info(str(e))
             return ""
         return best
 
     def get_worst_time():
         try:
-            worst = add_zero(max([float(i) for i in times]))
-        except ValueError:
+            float_times, _ = convert_to_float(times)
+            worst = add_zero(max(float_times))
+        except ValueError as e:
+            logging.info(str(e))
             return ""
         return worst
 
@@ -366,6 +413,11 @@ def main(stdscr):
             
             elif words[0] == 'del':
                 delete(int(words[1]))
+                update_stats()
+                render_stats()
+
+            elif words[0] == 'dnf':
+                dnf()
                 update_stats()
                 render_stats()
                 
