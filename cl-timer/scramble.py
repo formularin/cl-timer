@@ -1,18 +1,51 @@
 import random
 
 
+def groups(lst, division):
+    if isinstance(division, int):
+        return [lst[i:i + division] for i in range(0, len(lst), division)]
+    elif isinstance(division, list):
+        i = 0
+        new_lst = []
+        for k in division:
+            new_lst.append(lst[i:i + k])
+            i += k
+        return new_lst
+
+
 MOVES = [
-    ['R', "R'", 'R2', 'U', "U'", 'U2', 'F', "F'", "F2"],
-    ['R', "R'", 'R2', 'L', "L'", 'L2', 'U', "U'", 'U2',
-     'D', "D'", 'D2', 'F', "F'", 'F2', 'B', "B'", 'B2']
+    ['R', "R'", 'R2',  # 2x2
+     'U', "U'", 'U2',  #
+     'F', "F'", "F2"], #
+    ['R', "R'", 'R2', 'L', "L'", 'L2',  # 3x3
+     'U', "U'", 'U2', 'D', "D'", 'D2',  #
+     'F', "F'", 'F2', 'B', "B'", 'B2'], #
+    ['R', "R'", 'R2', 'Rw', "Rw'", 'Rw2', 'L', "L'", 'L2',  # 4x4
+     'U', "U'", 'U2', 'Uw', "Uw'", 'Uw2', 'D', "D'", 'D2',  #
+     'F', "F'", 'F2', 'Fw', "Fw'", 'Fw2', 'B', "B'", 'B2'], #
+    ['R', "R'", 'R2', 'Rw', "Rw'", 'Rw2', 'L', "L'", 'L2', 'Lw', "Lw'", 'Lw2',  # 5x5
+     'U', "U'", 'U2', 'Uw', "Uw'", 'Uw2', 'D', "D'", 'D2', 'Dw', "Dw'", 'Dw2',  #
+     'F', "F'", 'F2', 'Fw', "Fw'", 'Fw2', 'B', "B'", 'B2', 'Bw', "Bw'", 'Bw2'], #
+    ['R', "R'", 'R2', 'Rw', "Rw'", 'Rw2', '3Rw', "3Rw'", '3Rw2', 'L', "L'", 'L2', 'Lw', "Lw'", 'Lw2',  # 6x6
+     'U', "U'", 'U2', 'Uw', "Uw'", 'Uw2', '3Uw', "3Uw'", '3Uw2', 'D', "D'", 'D2', 'Dw', "Dw'", 'Dw2',  #
+     'F', "F'", 'F2', 'Fw', "Fw'", 'Fw2', '3Fw', "3Fw'", '3Fw2', 'B', "B'", 'B2', 'Bw', "Bw'", 'Bw2'], #
+    ['R', "R'", 'R2', 'Rw', "Rw'", 'Rw2', '3Rw', "3Rw'", '3Rw2', 'L', "L'", 'L2', 'Lw', "Lw'", 'Lw2', '3Lw', "3Lw'", '3Lw2',  # 7x7
+     'U', "U'", 'U2', 'Uw', "Uw'", 'Uw2', '3Uw', "3Uw'", '3Uw2', 'D', "D'", 'D2', 'Dw', "Dw'", 'Dw2', '3Dw', "3Dw'", '3Dw2',  #
+     'F', "F'", 'F2', 'Fw', "Fw'", 'Fw2', '3Fw', "3Fw'", '3Fw2', 'B', "B'", 'B2', 'Bw', "Bw'", 'Bw2', '3Bw', "3Bw'", '3Bw2']  #
     ]
 
-AXES = [
-    [size[i:i + (3 * (s + 1))] for i in range(0, len(size), (3 * (s + 1)))]
-    for s, size in enumerate(MOVES)
-    ]
+AXES = [groups(lst, (i + 1) * 3) for i, lst in enumerate(MOVES)]
 
-SIDES = [[size[i:i + 3] for i in range(0, len(size), 3)] for size in MOVES]
+SIDE_LENTHS = [
+    [3 for _ in range(3)],  # 2x2
+    [3 for _ in range(6)],  # 3x3
+    [6 if i % 2 == 0 else 3 for i in range(6)],  # 4x4
+    [6 for _ in range(6)],  # 5x5
+    [9 if i % 2 == 0 else 6 for i in range(6)],  # 6x6
+    [9 for _ in range(6)]
+]
+
+SIDES = [groups(lst, side_lengths) for side_lengths, lst in zip(SIDE_LENTHS, MOVES)]
 
 
 def choose_move(scramble_moves, size):
