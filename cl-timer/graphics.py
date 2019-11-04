@@ -268,6 +268,15 @@ class Scramble(Image):
         self._chars = chars
         self.render()
 
+    def render(self):
+        """
+        This exists because scrambles can be longer than the length of the screen
+        """
+        if len(self.chars) > len(self.canvas.grid[0]):
+            moves = 
+        else:
+            Image.render(self)
+
 
 class Cursor(Image):
     """

@@ -20,7 +20,7 @@ There will most likely be pip installation once the first stable version is rele
 
 # IMPORTANT
 
-**The way measure holding the spacebar down then releasing it as one keypress requires a specific key-repeat. On macos, go to System Preferences -> Keyboard. Move the sliders for "Key Repeat" and "Delay Until Repeat" to the side labeled "short" as far as possible.**
+**The way cl-timer detects holding the spacebar down for a long time as a single keypress requires a minimum key-repeat speed. On macos, go to System Preferences -> Keyboard. Move the sliders for "Key Repeat" and "Delay Until Repeat" to the side labeled "short" as far as possible.**
 
 ### Basic Features
 

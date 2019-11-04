@@ -467,17 +467,17 @@ def main(stdscr):
         generate_scramble(int(settings['puzzle']),
         int(settings['scramble-length']))))
 
-    number_display = NumberDisplay(canvas, 15, 5)
-    timer_background = Image(canvas, 0, 3, char(TIMER_BACKGROUND))
+    number_display = NumberDisplay(canvas, 15, 7)
+    timer_background = Image(canvas, 0, 5, char(TIMER_BACKGROUND))
 
-    ao5_image = Image(canvas, 51, 4, char(f'AO5: {calculate_average(len(times), 5)}'))
-    ao12_image = Image(canvas, 51, 5, char(f'AO12: {calculate_average(len(times), 12)}'))
-    best_ao5_image = Image(canvas, 51, 6, char(f'Best AO5: {get_best_average(5)}'))
-    best_ao12_image = Image(canvas, 51, 7, char(f'Best AO12: {get_best_average(12)}'))
-    best_time_image = Image(canvas, 51, 8, char(f'Best time: {get_best_time()}'))
-    worst_time_image = Image(canvas, 51, 9, char(f'Worst time: {get_worst_time()}'))
-    number_of_times_image = Image(canvas, 51, 10, char(f'Number of Times: {len(times)}'))
-    session_mean_image = Image(canvas, 51, 11, char(f'Session Mean: {get_session_mean()}'))
+    ao5_image = Image(canvas, 51, 6, char(f'AO5: {calculate_average(len(times), 5)}'))
+    ao12_image = Image(canvas, 51, 7, char(f'AO12: {calculate_average(len(times), 12)}'))
+    best_ao5_image = Image(canvas, 51, 8, char(f'Best AO5: {get_best_average(5)}'))
+    best_ao12_image = Image(canvas, 51, 9, char(f'Best AO12: {get_best_average(12)}'))
+    best_time_image = Image(canvas, 51, 10, char(f'Best time: {get_best_time()}'))
+    worst_time_image = Image(canvas, 51, 11, char(f'Worst time: {get_worst_time()}'))
+    number_of_times_image = Image(canvas, 51, 12, char(f'Number of Times: {len(times)}'))
+    session_mean_image = Image(canvas, 51, 13, char(f'Session Mean: {get_session_mean()}'))
 
     timer_running = False
     delay = 0  # how far behind the program is
