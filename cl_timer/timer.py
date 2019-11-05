@@ -447,7 +447,10 @@ def mainloops(stdscr):
                 
             elif words[0] == 'q':
                 raise ExitException()
-                
+
+            else:  # command was not recognized
+                Image(canvas, 0, len(canvas.grid) - 1, char(f'{words[0]}: Invalid command')).render()
+                return
                 
     session_name_image = Image(canvas, 0, 0, char(session.string))
     scramble_image = Scramble(canvas, 0, 2, char(
