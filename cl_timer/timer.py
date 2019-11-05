@@ -452,6 +452,9 @@ def mainloops(stdscr):
                 plus_two()
                 update_stats()
                 render_stats()
+
+            elif words[0] == 'q':
+                raise ExitException()
                 
                 
     session_name_image = Image(canvas, 0, 0, char(session.string))
