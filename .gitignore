@@ -12,3 +12,6 @@ test2.py
 debug
 __pycache__
 thing
+dist
+build
+cl_timer.egg-info

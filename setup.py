@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cl-timer",
-    version="0.0.1",
+    version="0.0.7",
     author="Arin Khare",
     author_email="arinmkhare@gmail.com",
     description="A Cubing Timer for the Terminal",
@@ -15,5 +15,11 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-    ]
+    ],
+
+    entry_points = {
+        'console_scripts': [
+            'cl-timer = cl_timer.timer:main'
+        ]
+    }
 )

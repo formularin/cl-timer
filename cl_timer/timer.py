@@ -6,12 +6,12 @@ import signal
 import subprocess
 import time
 
-from art import (DISCLAIMER, TIMER_BACKGROUND,
+from cl_timer.art import (DISCLAIMER, TIMER_BACKGROUND,
                  TITLE_ART, STATS)
-from graphics import (Canvas, Char, Cursor, Image,
+from cl_timer.graphics import (Canvas, Char, Cursor, Image,
                       InputLine, NumberDisplay,
                       Scramble, CommandInput)
-from scramble import generate_scramble
+from cl_timer.scramble import generate_scramble
 
 
 char = lambda string: Char.fromstring(string)
@@ -152,7 +152,7 @@ def display_stats(stdscr, solve, times, ao5s, ao12s, scrambles):
     display_text(stdscr, string)
 
 
-def main(stdscr):
+def mainloops(stdscr):
     """
     Includes all mainloops for the app.
     """
@@ -564,9 +564,8 @@ def main(stdscr):
         
         frame += 1
 
-if __name__ == '__main__':
-
+def main():
     try:
-        curses.wrapper(main)
+        curses.wrapper(mainloops)
     except ExitException:
         subprocess.call(['clear'])

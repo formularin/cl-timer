@@ -1,4 +1,4 @@
-from art import STARTING_TIME, DIGITS, DECIMAL_POINT
+from cl_timer.art import STARTING_TIME, DIGITS, DECIMAL_POINT
 
 
 class Canvas:
