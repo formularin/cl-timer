@@ -8,13 +8,19 @@ This currently only works on macos, though once a level of functionality on par 
 
 ## Installation
 
-As of right now, cl-timer is only "installable" through git
+### Install with Git
 
 `git clone 'https://github.com/lol-cubes/cl-timer'`
 
 Run timer.py to start program.
 
-There will most likely be pip installation once the first stable version is released
+### Install with Pip
+
+`pip install cl-timer`
+
+The command cl-timer will be added to a bin directory in you PATH.
+
+Make sure you are not in a virtual environment.
 
 ## Usage
 
