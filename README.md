@@ -107,6 +107,12 @@ Solve is now represented as f"DNF({time})"
 Treats solve as plus twos are treated by other timers and by WCA regulations.
 Solve is now represented as f"{time + 2}+"
 
+#### `q`
+
+*exits the program*
+
+Just an alternative to quiting using ^c. I found myself typing this familiar vim command in cl-timer numerous times, and it does no harm to have it here.
+
 ## System Requirements and Dependencies
 
 Once that aforementioned work is done on adapting this to other OSes, I will have exact instructions on how to make this work on each system.
