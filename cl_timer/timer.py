@@ -6,11 +6,17 @@ import signal
 import subprocess
 import time
 
-from cl_timer.art import (DISCLAIMER, TIMER_BACKGROUND,
-                 TITLE_ART, STATS)
-from cl_timer.graphics import (Canvas, Char, Cursor, Image,
-                      InputLine, NumberDisplay,
-                      Scramble, CommandInput)
+from cl_timer.art import (
+    DISCLAIMER,
+    TIMER_BACKGROUND,
+    TITLE_ART,
+    STATS
+)
+from cl_timer.graphics import (
+    Canvas, Char, Cursor, CoverUpImage,
+    Image, InputLine, Scramble,
+    CommandInput, NumberDisplay
+)
 from cl_timer.scramble import generate_scramble
 
 
@@ -345,33 +351,23 @@ def mainloops(stdscr):
     def update_stats():
         ao5 = calculate_average(len(times), 5)
         ao5s.append(ao5)
-        ao5_image.displayed_chars = char(f'AO5: {ao5}')
+        ao5_image.chars = char(f'AO5: {ao5}')
         ao12 = calculate_average(len(times), 12)
         ao12s.append(ao12)
-        ao12_image.displayed_chars = char(f'AO12: {ao12}')
+        ao12_image.chars = char(f'AO12: {ao12}')
         best_ao5 = get_best_average(5)
-        best_ao5_image.displayed_chars = char(f'Best AO5: {best_ao5}')
+        best_ao5_image.chars = char(f'Best AO5: {best_ao5}')
         best_ao12 = get_best_average(12)
-        best_ao12_image.displayed_chars = char(f'Best AO12: {best_ao12}')
+        best_ao12_image.chars = char(f'Best AO12: {best_ao12}')
         best_time = get_best_time()
-        best_time_image.displayed_chars = char(f'Best time: {best_time}')
+        best_time_image.chars = char(f'Best time: {best_time}')
         worst_time = get_worst_time()
-        worst_time_image.displayed_chars = char(f'Worst time: {worst_time}')
-        number_of_times_image.displayed_chars = char(f'Number of Times: {len(times)}')
+        worst_time_image.chars = char(f'Worst time: {worst_time}')
+        number_of_times_image.chars = char(f'Number of Times: {len(times)}')
         session_mean = get_session_mean()
-        session_mean_image.displayed_chars = char(f'Session Mean: {session_mean}')
+        session_mean_image.chars = char(f'Session Mean: {session_mean}')
 
         return ao5, ao12
-
-    def render_stats():
-        ao5_image.render()
-        ao12_image.render()
-        best_ao5_image.render()
-        best_ao12_image.render()
-        best_time_image.render()
-        worst_time_image.render()
-        number_of_times_image.render()
-        session_mean_image.render()
 
     def command_line():
         """
@@ -399,7 +395,7 @@ def mainloops(stdscr):
                 if words[1] in ['puzzle', 'scramble-length']:
                     new_scramble = generate_scramble(int(settings['puzzle']),
                                                 int(settings['scramble-length']))
-                    scramble_image.displayed_chars = char(new_scramble)
+                    scramble_image.chars = char(new_scramble)
 
                 with open(settings_file.string, 'w') as f:
                     json.dump(settings, f)
@@ -436,23 +432,19 @@ def mainloops(stdscr):
                     scrambles.append(line[3])
 
                 update_stats()
-                render_stats()
             
             elif words[0] == 'del':
                 delete(int(words[1]))
                 update_stats()
-                render_stats()
-
+                
             elif words[0] == 'dnf':
                 dnf()
-                update_stats()
-                render_stats()
+                update_stats()        
 
             elif words[0] == 'plus-two':
                 plus_two()
                 update_stats()
-                render_stats()
-
+                
             elif words[0] == 'q':
                 raise ExitException()
                 
@@ -466,14 +458,23 @@ def mainloops(stdscr):
     number_display = NumberDisplay(canvas, 15, 7)
     timer_background = Image(canvas, 0, 5, char(TIMER_BACKGROUND))
 
-    ao5_image = Image(canvas, 51, 6, char(f'AO5: {calculate_average(len(times), 5)}'))
-    ao12_image = Image(canvas, 51, 7, char(f'AO12: {calculate_average(len(times), 12)}'))
-    best_ao5_image = Image(canvas, 51, 8, char(f'Best AO5: {get_best_average(5)}'))
-    best_ao12_image = Image(canvas, 51, 9, char(f'Best AO12: {get_best_average(12)}'))
-    best_time_image = Image(canvas, 51, 10, char(f'Best time: {get_best_time()}'))
-    worst_time_image = Image(canvas, 51, 11, char(f'Worst time: {get_worst_time()}'))
-    number_of_times_image = Image(canvas, 51, 12, char(f'Number of Times: {len(times)}'))
-    session_mean_image = Image(canvas, 51, 13, char(f'Session Mean: {get_session_mean()}'))
+    ao5_image = CoverUpImage(canvas, 51, 6, char(f'AO5: {calculate_average(len(times), 5)}'))
+    ao12_image = CoverUpImage(canvas, 51, 7, char(f'AO12: {calculate_average(len(times), 12)}'))
+    best_ao5_image = CoverUpImage(canvas, 51, 8, char(f'Best AO5: {get_best_average(5)}'))
+    best_ao12_image = CoverUpImage(canvas, 51, 9, char(f'Best AO12: {get_best_average(12)}'))
+    best_time_image = CoverUpImage(canvas, 51, 10, char(f'Best time: {get_best_time()}'))
+    worst_time_image = CoverUpImage(canvas, 51, 11, char(f'Worst time: {get_worst_time()}'))
+    number_of_times_image = CoverUpImage(canvas, 51, 12, char(f'Number of Times: {len(times)}'))
+    session_mean_image = CoverUpImage(canvas, 51, 13, char(f'Session Mean: {get_session_mean()}'))
+    
+    ao5_image.render()
+    ao12_image.render()
+    best_ao5_image.render()
+    best_ao12_image.render()
+    best_time_image.render()
+    worst_time_image.render()
+    number_of_times_image.render()
+    session_mean_image.render()
 
     timer_running = False
     delay = 0  # how far behind the program is
@@ -531,7 +532,7 @@ def mainloops(stdscr):
                 new_scramble = generate_scramble(int(settings['puzzle']),
                                             int(settings['scramble-length']))
                 scrambles.append(new_scramble)
-                scramble_image.displayed_chars = char(new_scramble)
+                scramble_image.chars = char(new_scramble)
 
                 ao5, ao12 = update_stats()
 
@@ -545,8 +546,6 @@ def mainloops(stdscr):
         
         timer_background.render()
         number_display.render()
-        
-        render_stats()
 
         stdscr.clear()
         stdscr.addstr(canvas.display)

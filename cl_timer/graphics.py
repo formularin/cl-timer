@@ -253,6 +253,30 @@ class NumberDisplay(Image):
         self.chars = Char.fromstring(STARTING_TIME)
 
 
+class CoverUpImage(Image):
+    """
+    An image that covers up it's previous characters when it's chars are changed
+    """
+
+    def __init__(self, canvas, x, y, chars):
+        
+        self.canvas = canvas
+        self.x = x
+        self.y = y
+        self._chars = chars
+
+    @property
+    def chars(self):
+        return self._chars
+
+    @chars.setter
+    def chars(self, chars):
+        for c in self._chars:
+            self.canvas.replace(self.x + c.x, self.y, " ")
+        self._chars = chars
+        self.render()
+
+
 def break_top_line(string, line_length):
     """
     Takes a string containing a scramble and returns a string that is the same
@@ -283,28 +307,13 @@ def break_top_line(string, line_length):
     return ''.join(chars)
 
 
-class Scramble(Image):
+class Scramble(CoverUpImage):
     """
-    Literally just an image that deletes all previous chars when chars are changed
+    Optimized for showing a scramble
     """
 
     def __init__(self, canvas, x, y, chars):
-        
-        self.canvas = canvas
-        self.x = x
-        self.y = y
-        self._chars = chars
-
-    @property
-    def chars(self):
-        return self._chars
-
-    @chars.setter
-    def chars(self, chars):
-        for c in self._chars:
-            self.canvas.replace(self.x + c.x, self.y, " ")
-        self._chars = chars
-        self.render()
+        CoverUpImage.__init__(self, canvas, x, y, chars)
 
     def render(self):
         """
@@ -324,7 +333,6 @@ class Scramble(Image):
             Image.render(self)
         else:
             Image.render(self)
-
 
 
 class Cursor(Image):
