@@ -1,9 +1,5 @@
 from art import STARTING_TIME, DIGITS, DECIMAL_POINT
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 class Canvas:
     """

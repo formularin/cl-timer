@@ -14,11 +14,6 @@ from graphics import (Canvas, Char, Cursor, Image,
 from scramble import generate_scramble
 
 
-import logging
-
-logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
-
-
 char = lambda string: Char.fromstring(string)
 
 HOME = str(Path.home())
@@ -328,24 +323,22 @@ def main(stdscr):
     def get_best_time():
         try:
             converted_times, _ = convert_to_float(times, 'single')
-            float_times = [float(t[:-1]) for t in converted_times if isinstance(t, str)]
+            float_times = [float(t[:-1]) if isinstance(t, str) else t for t in converted_times]
             best = converted_times[float_times.index(min(float_times))]
             if isinstance(best, float):
                 return add_zero(best)
         except ValueError as e:
-            logging.info(str(e))
             return ""
         return best
 
     def get_worst_time():
         try:
             converted_times, _ = convert_to_float(times, 'single')
-            float_times = [float(t[:-1]) for t in converted_times if isinstance(t, str)]
+            float_times = [float(t[:-1]) if isinstance(t, str) else t for t in converted_times]
             worst = converted_times[float_times.index(max(float_times))]
             if isinstance(worst, float):
                 return add_zero(worst)
         except ValueError as e:
-            logging.info(str(e))
             return ""
         return worst
 
