@@ -16,7 +16,7 @@ DIGITS = [
 
 
 DISCLAIMER = '\
-The timer starts a few seconds after you let go of the spacebar,\nbut immedia\
+The timer starts a few moments after you let go of the spacebar,\nbut immedia\
 tely afterwards it catches up to the correct times.\n\nKnow that the time disp\
 layed at the end to each solve is accurate\ndown to the hundredth of a second,\
  as are all of the other stats\nmade available by this timer.\n\nThanks for re\
