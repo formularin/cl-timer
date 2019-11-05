@@ -291,7 +291,7 @@ def main(stdscr):
             return ''
         else:
             latest_average = times[solve - length:]  # list of last `length` solves
-            latest_average, _ = convert_to_float(latest_average)
+            latest_average, _ = convert_to_float(latest_average, "average")
             if len(latest_average) < 4:
                 return 'DNF'
             if len(latest_average) == 4:
@@ -407,7 +407,6 @@ def main(stdscr):
                     new_scramble = generate_scramble(int(settings['puzzle']),
                                                 int(settings['scramble-length']))
                     scramble_image.displayed_chars = char(new_scramble)
-                    scramble_image.render()
 
                 with open(settings_file.string, 'w') as f:
                     json.dump(settings, f)
@@ -466,6 +465,7 @@ def main(stdscr):
     scramble_image = Scramble(canvas, 0, 2, char(
         generate_scramble(int(settings['puzzle']),
         int(settings['scramble-length']))))
+    scramble_image.render()
 
     number_display = NumberDisplay(canvas, 15, 7)
     timer_background = Image(canvas, 0, 5, char(TIMER_BACKGROUND))
@@ -546,7 +546,6 @@ def main(stdscr):
                         f.write(f'\n{add_zero(t)}\t{ao5}\t{ao12}\t{new_scramble}')
 
         session_name_image.render()
-        scramble_image.render()
         
         timer_background.render()
         number_display.render()

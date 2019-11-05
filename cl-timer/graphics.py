@@ -1,5 +1,9 @@
 from art import STARTING_TIME, DIGITS, DECIMAL_POINT
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Canvas:
     """
@@ -17,7 +21,10 @@ class Canvas:
         Replaces char in certain location of self.grid
         """
         row_index = (len(self.grid) - 1) - y
-        self.grid[row_index][x] = char
+        try:
+            self.grid[row_index][x] = char
+        except IndexError:
+            pass
 
     @property
     def display(self):
@@ -106,10 +113,15 @@ class Image:
         max_x = max([char.x for char in self.chars]) + 1
         max_y = max([char.y for char in self.chars]) + 1
 
-        chars = [[[] for _ in range(max_y)] for _ in range(max_x)]
+        chars = [[[] for _ in range(max_x)] for _ in range(max_y)]
 
         for char in self.chars:
-            chars[char.x][char.y] = char.char
+            chars[char.y][char.x] = char.char
+
+        for i, l in enumerate(chars[:]):
+            if [] in l:
+                for k in range(l.count([])):
+                    chars[i].remove([])
 
         return '\n'.join([''.join(line) for line in chars])
 
@@ -245,6 +257,36 @@ class NumberDisplay(Image):
         self.chars = Char.fromstring(STARTING_TIME)
 
 
+def break_top_line(string, line_length):
+    """
+    Takes a string containing a scramble and returns a string that is the same
+    as the first string but with a newline in there that doesn't break any
+    moves but also makes the length of the new first line less than the `line_length`
+    """
+    moves = string.split(' ')
+    substrings = [' ' for _ in range(len(moves) - 1)]  # moves or spaces
+    for i, move in enumerate(moves):
+        substrings.insert(i * 2, move)
+    lengths = [len(substring) for substring in substrings]
+    
+    newline_index = 0
+
+    previous_sum = 0
+    for i in range(len(lengths)):
+        slice_sum = sum(lengths[:i])
+        if line_length == slice_sum:
+            newline_index = slice_sum
+            break
+        if (line_length < slice_sum) and (line_length > previous_sum):
+            newline_index = previous_sum
+            break
+        previous_sum = slice_sum
+    
+    chars = list(string)
+    chars.insert(newline_index, '\n')
+    return ''.join(chars)
+
+
 class Scramble(Image):
     """
     Literally just an image that deletes all previous chars when chars are changed
@@ -272,10 +314,21 @@ class Scramble(Image):
         """
         This exists because scrambles can be longer than the length of the screen
         """
-        if len(self.chars) > len(self.canvas.grid[0]):
-            moves = 
+        if len(self._chars) > len(self.canvas.grid[0]):
+            lines = []
+            bottom_line = str(self)
+            while True:
+                scramble_with_newline = break_top_line(bottom_line, len(self.canvas.grid[0]) - 1)
+                lines.append(scramble_with_newline.split('\n')[0])
+                new_bottom_line = scramble_with_newline.split('\n')[1]
+                if new_bottom_line == bottom_line:
+                    break
+                bottom_line = new_bottom_line
+            self._chars = Char.fromstring('\n'.join([l.strip() for l in lines]))
+            Image.render(self)
         else:
             Image.render(self)
+
 
 
 class Cursor(Image):

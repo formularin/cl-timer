@@ -90,4 +90,3 @@ def generate_scramble(size, length):
     for i in range(length):
         scramble_moves.append(choose_move(scramble_moves, size))
     return ' '.join(scramble_moves)
-
