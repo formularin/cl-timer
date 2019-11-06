@@ -52,6 +52,10 @@ class ExitCommandLine(Exception):
     pass
 
 
+class CommandSyntaxError(Exception):
+    pass
+
+
 settings = {
     'puzzle': '3',
     'scramble-length': '20'
@@ -374,6 +378,10 @@ def mainloops(stdscr):
         Inspired by vim...
         """
 
+        def show_error_message(string):
+            Image(canvas, 0, len(canvas.grid) - 1, char(string)).render()
+            raise CommandSyntaxError
+
         bg = Image(canvas, 0, 0, char(canvas.display))
         command_inputs = []
 
@@ -390,21 +398,50 @@ def mainloops(stdscr):
 
             words = command.split(' ')
             if words[0] == 'set':
-                settings[words[1]] = words[2]
-
+                
+                if len(words) != 3:
+                    if len(words) == 1:
+                        show_error_message('`set` takes exactly 2 arguments - 0 were given')
+                    else:
+                        if words[1] in ['puzzle', 'scramble-length']:
+                            show_error_message(f'`set {words[1]}` takes 1 argument - {len(words) - 1} were given')
+                
                 if words[1] in ['puzzle', 'scramble-length']:
+                    if words[1] == 'puzzle':
+                        try:
+                            if not (int(words[2]) in [i for i in range(2, 8)]):
+                                show_error_message('`set puzzle` takes an integer between 2 and 7 (inclusive) as an argument')
+                        except ValueError:
+                            show_error_message('`set puzzle` takes an integer between 2 and 7 (inclusive) as an argument')
+                    if words[1] == 'scramble-length':
+                        try:
+                            int(words[2])
+                        except ValueError:
+                            show_error_message('`set scramble-length` takes an integer as an argument')
                     new_scramble = generate_scramble(int(settings['puzzle']),
                                                 int(settings['scramble-length']))
                     scramble_image.chars = char(new_scramble)
+                else:
+                    show_error_message(f'`set` - invalid argument: "{words[1]}"')
+
+                settings[words[1]] = words[2]
 
                 with open(settings_file.string, 'w') as f:
                     json.dump(settings, f)
                     
             elif words[0] == 'info':
-                try:
-                    display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
-                except IndexError:
+                if len(words) == 1:
                     subprocess.call(['vim', session_file.string])
+                elif len(words) == 2:
+                    try:
+                        if not (int(words[1]) in range(1, len(times) + 1)):
+                            show_error_message(f'invalid integer value: `{int(words[1])}`')
+                    except ValueError:
+                        show_error_message('`info` takes an integer as an argument')
+                    display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
+                else:
+                    show_error_message(f'`info` takes either 0 or 1 argument(s) - {len(words) - 1} were given')
+
             elif words[0] == 'session':
 
                 session.string = words[1]
@@ -449,8 +486,7 @@ def mainloops(stdscr):
                 raise ExitException()
 
             else:  # command was not recognized
-                Image(canvas, 0, len(canvas.grid) - 1, char(f'{words[0]}: Invalid command')).render()
-                return
+                show_error_message(f'{words[0]}: Invalid command')
                 
     session_name_image = Image(canvas, 0, 0, char(session.string))
     scramble_image = Scramble(canvas, 0, 2, char(
@@ -494,7 +530,10 @@ def mainloops(stdscr):
         key = stdscr.getch()
 
         if key == 58:  # :
-            command_line()
+            try:
+                command_line()
+            except CommandSyntaxError:
+                pass
             continue
 
         if not timer_running:
