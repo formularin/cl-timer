@@ -43,27 +43,27 @@ Press ^c at any time to exit the program
 
 Press ":", type the command, and press "enter". The effects of the command should show up immediately. Press "escape" to exit the command input.
 
-#### `set`
+#### `s`
 
 *changes settings*
 
-##### Arg 1: name of setting to change
+##### Arg 1: setting to change
 
 current list of changeable settings:
 
-- `puzzle` --- the order of rubik's cube you want the scramble notation for. As of right now that is only 3x3 and 2x2
+- `p` --- the order of rubik's cube you want the scramble notation for. As of right now that is only 3x3 and 2x2
 
-- `scramble-length` --- the length of the scramble.
+- `sl` --- the length of the scramble.
 
 ##### Arg 2: new value of setting
 
 corresponding possilbe values to each setting:
 
-- `puzzle` --- the number of layers in the puzzle, e. g. `2` meaning 2x2
+- `p` --- the number of layers in the puzzle, e. g. `2` meaning 2x2
 
-- `scramble-length` --- the number of moves in the scramble
+- `sl` --- the number of moves in the scramble
 
-#### `info`
+#### `i`
 
 *shows information about solves*
 
@@ -75,7 +75,7 @@ e. g. `2` means second solve in session
 
 When called without an argument, opens file (read-only) containing all times, averages, and scrambles
 
-#### `session`
+#### `c`
 
 *changes to different session*
 
@@ -83,9 +83,11 @@ When called without an argument, opens file (read-only) containing all times, av
 
 Switches to session name. Same functionality as session input on startup.
 
-#### `del`
+#### `rm`
 
 *deletes time*
+
+**After a solve is delete with this command, it is gone forever**
 
 ##### Arg 1: solve
 
@@ -93,14 +95,14 @@ e. g. `2` means second solve in session
 
 Removes all traces of solve at index `solve`
 
-#### `dnf`
+#### `d`
 
 *marks most recent solve as DNF*
 
 Treats solve as DNFs are treated by other timers and by WCA regulations.
 Solve is now represented as f"DNF({time})"
 
-#### `plus-two`
+#### `p`
 
 *marks most recent solve as "plus two"*
 
