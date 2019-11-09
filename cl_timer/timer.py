@@ -513,10 +513,10 @@ def mainloops(stdscr):
                 dnf()
                 update_stats()        
 
-            elif words[0] == 'plus-two':
+            elif words[0] == 'p':
 
                 if len(words) != 1:
-                    show_error_message(f'`plus-two` takes exactly 0 arguements - {len(words) - 1} were given')
+                    show_error_message(f'`p` takes exactly 0 arguements - {len(words) - 1} were given')
 
                 plus_two()
                 update_stats()
