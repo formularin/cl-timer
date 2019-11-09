@@ -480,10 +480,10 @@ def mainloops(stdscr):
 
                 update_stats()
             
-            elif words[0] == 'd':
+            elif words[0] == 'rm':
 
                 if len(words) != 2:
-                    show_error_message(f'`d` takes exactly 1 argument - {len(words) - 1} were given')
+                    show_error_message(f'`rm∂` takes exactly 1 argument - {len(words) - 1} were given')
 
                 try:
                     if int(words[1]) not in range(1, len(times) + 1):
@@ -505,10 +505,10 @@ def mainloops(stdscr):
                 delete(int(words[1]))
                 update_stats()
                 
-            elif words[0] == 'dnf':
+            elif words[0] == 'd':
 
                 if len(words) != 1:
-                    show_error_message(f'`dnf` takes exactly 0 arguements - {len(words) - 1} were given')
+                    show_error_message(f'`d` takes exactly 0 arguements - {len(words) - 1} were given')
 
                 dnf()
                 update_stats()        
