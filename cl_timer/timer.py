@@ -398,34 +398,37 @@ def mainloops(stdscr):
                 return
 
             words = command.split(' ')
-            if words[0] == 'set':
+            if words[0] == 's':
                 
                 if len(words) != 3:
                     if len(words) == 1:
-                        show_error_message('`set` takes exactly 2 arguments - 0 were given')
+                        show_error_message('`s` takes exactly 2 arguments - 0 were given')
                     else:
-                        if words[1] in ['puzzle', 'scramble-length']:
-                            show_error_message(f'`set {words[1]}` takes 1 argument - {len(words) - 1} were given')
+                        if words[1] in ['p', 'sl']:
+                            show_error_message(f'`s {words[1]}` takes 1 argument - {len(words) - 1} were given')
                 
-                if words[1] in ['puzzle', 'scramble-length']:
-                    if words[1] == 'puzzle':
+                if words[1] in ['p', 'sl']:
+                    if words[1] == 'p':
                         try:
                             if not (int(words[2]) in [i for i in range(2, 8)]):
-                                show_error_message('`set puzzle` takes an integer between 2 and 7 (inclusive) as an argument')
+                                show_error_message('`s p` takes an integer between 2 and 7 (inclusive) as an argument')
                         except ValueError:
-                            show_error_message('`set puzzle` takes an integer between 2 and 7 (inclusive) as an argument')
-                    if words[1] == 'scramble-length':
+                            show_error_message('`s p` takes an integer between 2 and 7 (inclusive) as an argument')
+                    if words[1] == 'sl':
                         try:
                             int(words[2])
                         except ValueError:
-                            show_error_message('`set scramble-length` takes an integer as an argument')
+                            show_error_message('`s sl` takes an integer as an argument')
                     new_scramble = generate_scramble(int(settings['puzzle']),
                                                 int(settings['scramble-length']))
                     scramble_image.chars = char(new_scramble)
                 else:
-                    show_error_message(f'`set` - invalid argument: "{words[1]}"')
+                    show_error_message(f'`s` - invalid argument: "{words[1]}"')
 
-                settings[words[1]] = words[2]
+                if words[1] == 'sl':
+                    settings['scramble-length'] = words[2]
+                elif words[1] == 'p':
+                    settings['puzzle'] = words[2]
 
                 with open(settings_file.string, 'w') as f:
                     json.dump(settings, f)
