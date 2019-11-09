@@ -418,10 +418,7 @@ def mainloops(stdscr):
                         try:
                             int(words[2])
                         except ValueError:
-                            show_error_message('`s sl` takes an integer as an argument')
-                    new_scramble = generate_scramble(int(settings['puzzle']),
-                                                int(settings['scramble-length']))
-                    scramble_image.chars = char(new_scramble)
+                            show_error_message(f'invalid integer value: {words[2]}')
                 else:
                     show_error_message(f'`s` - invalid argument: "{words[1]}"')
 
@@ -429,6 +426,10 @@ def mainloops(stdscr):
                     settings['scramble-length'] = words[2]
                 elif words[1] == 'p':
                     settings['puzzle'] = words[2]
+
+                new_scramble = generate_scramble(int(settings['puzzle']),
+                                                int(settings['scramble-length']))
+                scramble_image.chars = char(new_scramble)
 
                 with open(settings_file.string, 'w') as f:
                     json.dump(settings, f)
@@ -483,7 +484,7 @@ def mainloops(stdscr):
             elif words[0] == 'rm':
 
                 if len(words) != 2:
-                    show_error_message(f'`rm∂` takes exactly 1 argument - {len(words) - 1} were given')
+                    show_error_message(f'`rm` takes exactly 1 argument - {len(words) - 1} were given')
 
                 try:
                     if int(words[1]) not in range(1, len(times) + 1):
