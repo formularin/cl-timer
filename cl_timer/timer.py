@@ -368,7 +368,13 @@ def mainloops(stdscr):
         best_time_image.chars = char(f'Best time: {best_time}')
         worst_time = get_worst_time()
         worst_time_image.chars = char(f'Worst time: {worst_time}')
-        number_of_times_image.chars = char(f'Number of Times: {len(times)}')
+
+        len_successes = 0
+        for t in times:
+            if not ((isinstance(t, str)) and (t[:3] == 'DNF')):
+                len_successes += 1
+
+        number_of_times_image.chars = char(f'Number of Times: {len_successes}/{len(times)}')
         session_mean = get_session_mean()
         session_mean_image.chars = char(f'Session Mean: {session_mean}')
 
@@ -547,7 +553,13 @@ def mainloops(stdscr):
     best_ao12_image = CoverUpImage(canvas, 51, 9, char(f'Best AO12: {get_best_average(12)}'))
     best_time_image = CoverUpImage(canvas, 51, 10, char(f'Best time: {get_best_time()}'))
     worst_time_image = CoverUpImage(canvas, 51, 11, char(f'Worst time: {get_worst_time()}'))
-    number_of_times_image = CoverUpImage(canvas, 51, 12, char(f'Number of Times: {len(times)}'))
+
+    len_successes = 0
+    for t in times:
+        if not ((isinstance(t, str)) and (t[:3] == 'DNF')):
+            len_successes += 1
+    number_of_times_image = CoverUpImage(canvas, 51, 12, char(f'Number of Times: {len_successes}/{len(times)}'))
+    
     session_mean_image = CoverUpImage(canvas, 51, 13, char(f'Session Mean: {get_session_mean()}'))
     
     ao5_image.render()
