@@ -7,10 +7,6 @@ import string
 import subprocess
 import time
 
-import sys
-
-sys.path.append('/Users/Mukeshkhare/Desktop/projects/python/cl-timer')
-
 from cl_timer.art import (
     DISCLAIMER,
     TIMER_BACKGROUND,
@@ -23,11 +19,6 @@ from cl_timer.graphics import (
     CommandInput, NumberDisplay
 )
 from cl_timer.scramble import generate_scramble
-
-
-import logging
-
-logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
 
 
 char = lambda string: Char.fromstring(string)
@@ -662,7 +653,3 @@ def main():
         curses.wrapper(mainloops)
     except ExitException:
         subprocess.call(['clear'])
-
-
-if __name__ == '__main__':
-    main()
