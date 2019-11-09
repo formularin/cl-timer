@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import signal
+import string
 import subprocess
 import time
 
@@ -444,6 +445,12 @@ def mainloops(stdscr):
 
             elif words[0] == 'session':
 
+                if len(words) != 2:
+                    show_error_message(f'`session` takes exactly 1 argument - {len(words) - 1} were given')
+
+                for char in words[1]:
+                    if char not in string.printable[:-5]:
+                        show_error_message(f'invalid file name: {words[1]}')
                 session.string = words[1]
                 session_file.string = f"{HOME}/.cl-timer/{words[1]}"
                 session_name_image.displayed_chars = char(words[1])
@@ -471,18 +478,40 @@ def mainloops(stdscr):
                 update_stats()
             
             elif words[0] == 'del':
+
+                if len(words) != 2:
+                    show_error_message(f'`del` takes exactly 1 argument - {len(words) - 1} were given')
+
+                try:
+                    if int(words[1]) not in range(1, len(times) + 1):
+                        show_error_message(f'invalid integer value: {words[1]}')
+                except ValueError:
+                    show_error_message(f'invalid integer value: {words[1]}')
+
                 delete(int(words[1]))
                 update_stats()
                 
             elif words[0] == 'dnf':
+
+                if len(words) != 1:
+                    show_error_message(f'`dnf` takes exactly 0 arguements - {len(words) - 1} were given')
+
                 dnf()
                 update_stats()        
 
             elif words[0] == 'plus-two':
+
+                if len(words) != 1:
+                    show_error_message(f'`plus-two` takes exactly 0 arguements - {len(words) - 1} were given')
+
                 plus_two()
                 update_stats()
                 
             elif words[0] == 'q':
+
+                if len(words) != 1:
+                    show_error_message(f'`q` takes exactly 0 arguements - {len(words) - 1} were given')
+
                 raise ExitException()
 
             else:  # command was not recognized
