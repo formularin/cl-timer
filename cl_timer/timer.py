@@ -446,10 +446,10 @@ def mainloops(stdscr):
                 else:
                     show_error_message(f'`i` takes either 0 or 1 argument(s) - {len(words) - 1} were given')
 
-            elif words[0] == 'session':
+            elif words[0] == 'c':
 
                 if len(words) != 2:
-                    show_error_message(f'`session` takes exactly 1 argument - {len(words) - 1} were given')
+                    show_error_message(f'`c` takes exactly 1 argument - {len(words) - 1} were given')
 
                 for c in words[1]:
                     if c not in string.printable[:-5]:
