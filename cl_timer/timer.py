@@ -7,6 +7,10 @@ import string
 import subprocess
 import time
 
+import sys
+
+sys.path.append('/Users/Mukeshkhare/Desktop/projects/python/cl-timer')
+
 from cl_timer.art import (
     DISCLAIMER,
     TIMER_BACKGROUND,
@@ -19,6 +23,11 @@ from cl_timer.graphics import (
     CommandInput, NumberDisplay
 )
 from cl_timer.scramble import generate_scramble
+
+
+import logging
+
+logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
 
 
 char = lambda string: Char.fromstring(string)
@@ -448,8 +457,8 @@ def mainloops(stdscr):
                 if len(words) != 2:
                     show_error_message(f'`session` takes exactly 1 argument - {len(words) - 1} were given')
 
-                for char in words[1]:
-                    if char not in string.printable[:-5]:
+                for c in words[1]:
+                    if c not in string.printable[:-5]:
                         show_error_message(f'invalid file name: {words[1]}')
                 session.string = words[1]
                 session_file.string = f"{HOME}/.cl-timer/{words[1]}"
@@ -486,7 +495,18 @@ def mainloops(stdscr):
                     if int(words[1]) not in range(1, len(times) + 1):
                         show_error_message(f'invalid integer value: {words[1]}')
                 except ValueError:
-                    show_error_message(f'invalid integer value: {words[1]}')
+                    if words[1] == 'all':
+                        ip = InputLine(canvas, "Are you sure you want to delete all the times in this session? (y/n) ")
+                        answer = ask_for_input(
+                            stdscr, canvas, ip, Cursor(canvas), True)
+                        if answer == 'y':
+                            for _ in range(1, len(times[:]) + 1):
+                                delete(1)
+                            continue
+                        else:
+                            continue
+                    else:
+                        show_error_message(f'invalid integer value: {words[1]}')
 
                 delete(int(words[1]))
                 update_stats()
@@ -642,3 +662,7 @@ def main():
         curses.wrapper(mainloops)
     except ExitException:
         subprocess.call(['clear'])
+
+
+if __name__ == '__main__':
+    main()
