@@ -503,6 +503,7 @@ def mainloops(stdscr):
                         if answer == 'y':
                             for _ in range(1, len(times[:]) + 1):
                                 delete(1)
+                            update_stats()
                             continue
                         else:
                             continue
