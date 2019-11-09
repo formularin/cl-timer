@@ -480,10 +480,10 @@ def mainloops(stdscr):
 
                 update_stats()
             
-            elif words[0] == 'del':
+            elif words[0] == 'd':
 
                 if len(words) != 2:
-                    show_error_message(f'`del` takes exactly 1 argument - {len(words) - 1} were given')
+                    show_error_message(f'`d` takes exactly 1 argument - {len(words) - 1} were given')
 
                 try:
                     if int(words[1]) not in range(1, len(times) + 1):
