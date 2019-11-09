@@ -433,7 +433,7 @@ def mainloops(stdscr):
                 with open(settings_file.string, 'w') as f:
                     json.dump(settings, f)
                     
-            elif words[0] == 'info':
+            elif words[0] == 'i':
                 if len(words) == 1:
                     subprocess.call(['vim', session_file.string])
                 elif len(words) == 2:
@@ -441,10 +441,10 @@ def mainloops(stdscr):
                         if not (int(words[1]) in range(1, len(times) + 1)):
                             show_error_message(f'invalid integer value: `{int(words[1])}`')
                     except ValueError:
-                        show_error_message('`info` takes an integer as an argument')
+                        show_error_message('`i` takes an integer as an argument')
                     display_stats(stdscr, int(words[1]), times, ao5s, ao12s, scrambles)
                 else:
-                    show_error_message(f'`info` takes either 0 or 1 argument(s) - {len(words) - 1} were given')
+                    show_error_message(f'`i` takes either 0 or 1 argument(s) - {len(words) - 1} were given')
 
             elif words[0] == 'session':
 
