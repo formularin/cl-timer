@@ -1,0 +1,23 @@
+#navbar {
+    height: 100px;
+    background-color: black;
+    position: fixed;
+    width: 100%;
+}
+
+.navbar-link {
+    color: white;
+    display: inline-block;
+    height: 100%;
+    width: 20%;
+    margin-left: 5%;
+    margin-right: 5%;
+    text-align: center;
+    text-decoration: none;
+}
+
+.navbar-link > p {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
