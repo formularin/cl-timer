@@ -1,3 +1,5 @@
+@import "../fonts/Inter/inter.css";
+
 * {
     margin: 0;
     padding: 0;
@@ -20,10 +22,16 @@ img {
     margin-top: 5%;
     text-align: center;
     margin-bottom: 2%;
-    font-size: 30px;
+}
+
+h1 {
+    font-size: 50px;
+    font-family: Inter;
+    font-weight: 300;
 }
 
 #text-summary {
+    width: 75%;
     display: inline-block;
     margin: 0 auto;
     text-align: left;
@@ -31,6 +39,7 @@ img {
 
 #text-summary > p, li {
     font-size: 18px;
+    font-family: Inter;
 }
 
 #ul-container-container {
