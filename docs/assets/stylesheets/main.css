@@ -3,12 +3,43 @@
     padding: 0;
 }
 
+#content-section {
+    width: 100%;
+    text-align: center;
+}
+
 #image-container {
     text-align: center;
 }
 
 img {
     margin-top: 120px;
-    /* width: 450;
-    height: 248; */
+}
+
+#title-container {
+    margin-top: 5%;
+    text-align: center;
+    margin-bottom: 2%;
+    font-size: 30px;
+}
+
+#text-summary {
+    display: inline-block;
+    margin: 0 auto;
+    text-align: left;
+}
+
+#text-summary > p, li {
+    font-size: 18px;
+}
+
+#ul-container-container {
+    width: 100%;
+    text-align: center;
+}
+
+#ul-container {
+    display: inline-block;
+    margin: 1% auto;
+    text-align: left;
 }
