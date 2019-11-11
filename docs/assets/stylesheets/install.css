@@ -9,3 +9,36 @@ html, body {
     margin: 0 0 0 0;
     height: 100%;
 }
+
+#content-section {
+    width: 100%;
+    text-align: center;
+    transform: translateY(150px);
+}
+
+#macos {
+    font-family: Inter;
+    font-weight: 1000;
+}
+
+.installation-type {
+    margin-top: 50px;
+}
+
+.installation-type > h1 {
+    font-family: Inter;
+    font-weight: 300;
+    margin-bottom: 10px;
+}
+
+.installation-type > p {
+    font-family: Inter;
+    font-size: 18;
+}
+
+.installation-type > p > code {
+    font-family: consolas;
+    font-size: 18;
+    background-color: #d6d6d6;
+    padding: 2px 2px 2px 2px;
+}
