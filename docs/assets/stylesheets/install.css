@@ -42,7 +42,7 @@ p {
     margin-bottom: 10px;
 }
 
-.installation-type > ol > li {
+.installation-type > ol > li, #important > ol > li {
     font-family: Inter;
     font-size: 18;
 }
@@ -63,4 +63,18 @@ p {
 
 #usage > p {
     font-size: 23px;
+}
+
+#important {
+    width: 75%;
+    margin-left: 25%;
+    text-align: left;
+}
+
+h1#important-header {
+    font-size: 60px;
+    font-weight: 1000;
+    font-family: Inter;
+    margin-top: 50px;
+    margin-bottom: 10px;
 }
