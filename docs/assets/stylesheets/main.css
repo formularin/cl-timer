@@ -66,3 +66,12 @@ h1 {
     margin: 1% auto;
     text-align: left;
 }
+
+iframe {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    width: 600px;
+    height: 400px;
+}
