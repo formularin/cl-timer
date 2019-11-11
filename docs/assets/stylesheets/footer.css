@@ -1,0 +1,15 @@
+#footer {
+    height: 50px;
+    background-color: black;
+    margin-top: 50px;
+    margin-bottom: 0px;
+    padding-left: 20px;
+}
+
+#footer > p {
+    font-family: Inter;
+    color: white;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
