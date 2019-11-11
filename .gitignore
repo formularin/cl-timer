@@ -17,3 +17,5 @@ build
 cl_timer.egg-info
 speed-up
 color
+.gitgnore.swp
+docs/TODO
