@@ -11,6 +11,14 @@ html, body {
     width: 100%;
 }
 
+#main-container {
+    min-height: 100vh;
+    overflow: hidden;
+    display: block;
+    position: relative;
+    padding-bottom: 50px;
+}
+
 #content-section {
     width: 100%;
     text-align: center;

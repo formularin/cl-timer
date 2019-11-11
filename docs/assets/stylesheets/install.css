@@ -11,6 +11,14 @@ html, body {
     width: 100%;
 }
 
+#main-container {
+    min-height: 100vh;
+    overflow: hidden;
+    display: block;
+    position: relative;
+    padding-bottom: 50px;
+}
+
 #content-section {
     width: 100%;
     text-align: center;
@@ -26,6 +34,10 @@ html, body {
 p {
     font-family: Inter;
     font-size: 18;
+}
+
+p > a {
+    z-index: -1;
 }
 
 .installation-type {
@@ -67,8 +79,10 @@ p {
 
 #important {
     width: 75%;
-    margin-left: 25%;
+    margin-left: auto;
+    margin-right: auto;
     text-align: left;
+    margin-bottom: 300px;
 }
 
 h1#important-header {

@@ -10,3 +10,11 @@ html, body {
     height: 100%;
     width: 100%;
 }
+
+#main-container {
+    min-height: 100vh;
+    overflow: hidden;
+    display: block;
+    position: relative;
+    padding-bottom: 50px;
+}

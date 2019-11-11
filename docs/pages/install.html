@@ -18,48 +18,50 @@
                 <p>Install</p>
             </a>
         </div>
-        <div id="content-section">
-            <h1 id="macos">As of right now, these installation options only work on macOS</h1>
-            <div id="summary">
-                <p>For all of these options, you will have to have python installed. To do this, go to <a href="https://www.python.org/">python.org</a> and download the latest version of python.</p>
+        <div id="main-container">
+            <div id="content-section">
+                <h1 id="macos">As of right now, these installation options only work on macOS</h1>
+                <div id="summary">
+                    <p>For all of these options, you will have to have python installed. To do this, go to <a href="https://www.python.org/">python.org</a> and download the latest version of python.</p>
+                </div>
+                <div class="installation-type">
+                    <h1>Install by Downloading Source Code</h1>
+                    <ol>
+                        <li>Download <a href="../assets/code/cl-timer.zip">this</a> file</li>
+                        <li>Double-click the file icon. A new folder should be created</li>
+                        <li>Open the folder, select all the files, and press cmd + c to copy them</li>
+                        <li>Open a new Finder window, and go to the outermost folder (should be in "locations")</li>
+                        <li>Click on "Macintosh HD"</li>
+                        <li>Press cmd + shift + . to show hidden files</li>
+                        <li>Go to usr, then local, then bin</li>
+                        <li>Press cmd + v to paste the files you copied before</li>
+                    </ol>
+                </div>
+                <div class="installation-type">
+                    <h1>Install Using pip</h1>
+                    <ol>
+                        <li>Press cmd + spacebar, type "terminal", and press enter</li>
+                        <li>In the window that pops up, type "pip install cl-timer", then press enter</li>
+                    </ol>
+                </div>
+                <div id="usage">
+                    <p>After installing using one of the above methods, whenever you open terminal and enter the command "cl-timer", the program will start.</p>
+                </div>
+                <h1 id="important-header">IMPORTANT</h1>
+                <div id="important">
+                    <p>cl-timer has the ability to detect a spacebar held for a long time, then released as a single keypress. 
+                    It does this by considering key repeat speed, and in order for it to work your delay until key repeat has to be as low as possible.</p>
+                    <p>To shorten your delay until key repeat:</p>
+                    <ol>
+                        <li>Open the System Preference app</li>
+                        <li>Go to the Keyboard settings</li>
+                        <li>Move the slider below "delay until repeat" as far to the right (the side labeled "short") as possible</li>
+                    </ol>
+                </div>
             </div>
-            <div class="installation-type">
-                <h1>Install by Downloading Source Code</h1>
-                <ol>
-                    <li>Download <a href="../assets/code/cl-timer.zip">this</a> file</li>
-                    <li>Double-click the file icon. A new folder should be created</li>
-                    <li>Open the folder, select all the files, and press cmd + c to copy them</li>
-                    <li>Open a new Finder window, and go to the outermost folder (should be in "locations")</li>
-                    <li>Click on "Macintosh HD"</li>
-                    <li>Press cmd + shift + . to show hidden files</li>
-                    <li>Go to usr, then local, then bin</li>
-                    <li>Press cmd + v to paste the files you copied before</li>
-                </ol>
-            </div>
-            <div class="installation-type">
-                <h1>Install Using pip</h1>
-                <ol>
-                    <li>Press cmd + spacebar, type "terminal", and press enter</li>
-                    <li>In the window that pops up, type "pip install cl-timer", then press enter</li>
-                </ol>
-            </div>
-            <div id="usage">
-                <p>After installing using one of the above methods, whenever you open terminal and enter the command "cl-timer", the program will start.</p>
-            </div>
-            <h1 id="important-header">IMPORTANT</h1>
-            <div id="important">
-                <p>cl-timer has the ability to detect a spacebar held for a long time, then released as a single keypress. 
-                   It does this by considering key repeat speed, and in order for it to work your delay until key repeat has to be as low as possible.</p>
-                <p>To shorten your delay until key repeat:</p>
-                <ol>
-                    <li>Open the System Preference app</li>
-                    <li>Go to the Keyboard settings</li>
-                    <li>Move the slider below "delay until repeat" as far to the right (the side labeled "short") as possible</li>
-                </ol>
-            </div>
-        </div>
-        <div id="footer">
-            <p>Contact me at <a href="mailto:arinmkhare@gmail.com">arinmkhare@gmail.com</a></p>
+            <footer id="footer">
+                <p>Contact me at <a href="mailto:arinmkhare@gmail.com">arinmkhare@gmail.com</a></p>
+            </footer>
         </div>
     </body>
 </html>
