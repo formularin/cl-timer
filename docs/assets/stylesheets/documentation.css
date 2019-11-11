@@ -18,3 +18,69 @@ html, body {
     position: relative;
     padding-bottom: 50px;
 }
+
+#content-section {
+    margin-top: 150px;
+    margin-left: 10px;
+    font-family: Inter;
+}
+
+#title {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#title > h1 {
+    font-size: 50px;
+}
+
+#basic-instructions {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#commands {
+    margin-top: 10px;
+    margin-left: 5%;
+}
+
+code {
+    font-family: consolas;
+    background-color: #d6d6d6;
+    padding: 2px 2px 2px 2px;
+}
+
+h2 {
+    font-size: 40px;
+    font-weight: 500;
+}
+
+.command {
+    margin-top: 20px;
+    margin-left: 10px;
+}
+
+.command-name {
+    font-size: 30px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.command-explanation {
+    margin-left: 20px;
+}
+
+.command-syntax {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.command-syntax > code {
+    font-size: 15px;
+}
+
+.arg-explanations {
+    margin-bottom: 20px;
+}

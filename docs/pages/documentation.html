@@ -23,6 +23,70 @@
             <div id="footer">
                 <p>Contact me at <a href="mailto:arinmkhare@gmail.com">arinmkhare@gmail.com</a></p>
             </div>
+            <div id="content-section">
+                <div id="title">
+                    <h1>CL Timer Documentation</h1>
+                </div>
+                <div id="basic-instructions">
+                    <p>Startup Command: <code>cl-timer</code>. As of right now, there are no command-line options.</p>
+                    <p>Once you are in a session, press ":" to enter command mode. To exit command mode, press the escape key.</p>
+                </div>
+                <div id="commands">
+                    <h2>Commands</h2>
+                    <div class="command">
+                        <h4 class="command-name"><code>s</code> - change the sessions's settings</h4>
+                        <div class="command-explanation">
+                            <p class="command-syntax">Syntax: <code>s (sl | p) &lt;value&gt;</code></p>
+                            <ul class="arg-explanations">
+                                <li><code>sl</code> - scramble length. Accepts any integer value.</li>
+                                <li><code>p</code> - puzzle (for the scramble). Accepts any integer value between 2 and 7 (inclusive).</li>
+                            </ul>
+                        <p class="example-usage">Example Usage: <code>s p 7</code> - set the puzzle to 7x7</p>
+                        </div>
+                    </div>
+                    <div class="command">
+                        <h4 class="command-name"><code>i</code> - show solve data</h4>
+                        <div class="command-explanation">
+                            <p class="command-syntax">Syntax: <code>i  [&lt;index&gt;]</code></p>
+                            <ul class="arg-explanations">
+                                <li>No arg - Opens session file in read-only mode, showing scrambles and averages for all times.</li>
+                                <li>index - Must be an integer between zero and the number of solves in the session. Shows data for solve with that index.</li>
+                            </ul>
+                        <p class="example-usage">Example Usage: <code>i 13</code> - show data for the 13th solve</p>
+                        </div>
+                    </div>
+                    <div class="command">
+                        <h4 class="command-name"><code>c</code> - change session</h4>
+                        <div class="command-explanation">
+                            <p class="command-syntax">Syntax: <code>c  &lt;session-name&gt;</code></p>
+                            <ul class="arg-explanations">
+                                <li>session-name - Any valid file name. Opens a session with that name. If no such session exists, it creates a new one.</li>
+                            </ul>
+                        <p class="example-usage">Example Usage: <code>s comp-practice</code> - open session called comp-practice</p>
+                        </div>
+                    </div>
+                    <div class="command">
+                        <h4 class="command-name"><code>rm</code> - delete solve</h4>
+                        <div class="command-explanation">
+                            <p class="command-syntax">Syntax: <code>rm  (all | &lt;index&gt;)</code></p>
+                            <ul class="arg-explanations">
+                                <li><code>all</code> - Deletes all times in session</li>
+                                <li>index - index - Must be an integer between zero and the number of solves in the session. Deletes solve with that index.</li>
+                            </ul>
+                        <p class="example-usage">Example Usage: <code>rm 13</code> - delete the 13th solve</p>
+                        </div>
+                    </div>
+                    <div class="command">
+                        <h4 class="command-name"><code>d</code> - mark most recent solve as DNF</h4>
+                    </div>
+                    <div class="command">
+                        <h4 class="command-name"><code>p</code> - mark most recent solve as plus-two</h4>
+                    </div>
+                    <div class="command">
+                        <h4 class="command-name"><code>q</code> - quit the program</h4>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
