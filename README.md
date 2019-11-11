@@ -4,6 +4,8 @@
 
 Installation instructions and command documentation: https://lol-cubes.github.io/cl-timer
 
+pypi: https://pypi.org/project/cl-timer
+
 ## Contribution
 
 Feel free to submit pull requests.
