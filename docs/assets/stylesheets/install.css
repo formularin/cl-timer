@@ -19,10 +19,20 @@ html, body {
 #macos {
     font-family: Inter;
     font-weight: 1000;
+    margin-bottom: 10px;
+}
+
+p {
+    font-family: Inter;
+    font-size: 18;
 }
 
 .installation-type {
+    width: 75%;
+    display: inline-block;
+    margin-left: 25%;
     margin-top: 50px;
+    text-align: left;
 }
 
 .installation-type > h1 {
@@ -31,12 +41,12 @@ html, body {
     margin-bottom: 10px;
 }
 
-.installation-type > p {
+.installation-type > ol > li {
     font-family: Inter;
     font-size: 18;
 }
 
-.installation-type > p > code {
+.installation-type > ol > li > code {
     font-family: consolas;
     font-size: 18;
     background-color: #d6d6d6;
