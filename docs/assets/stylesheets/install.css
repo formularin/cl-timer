@@ -53,3 +53,14 @@ p {
     background-color: #d6d6d6;
     padding: 2px 2px 2px 2px;
 }
+
+#usage {
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+}
+
+#usage > p {
+    font-size: 23px;
+}
