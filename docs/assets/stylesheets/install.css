@@ -55,6 +55,7 @@ p > a {
 }
 
 .installation-type > ol > li, #important > ol > li {
+    margin-right: 5%;
     font-family: Inter;
     font-size: 18;
 }
