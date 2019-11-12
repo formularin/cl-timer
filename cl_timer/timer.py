@@ -229,6 +229,31 @@ def mainloops(stdscr):
 
     display_text(stdscr, DISCLAIMER)
 
+    def add_time(t):
+        """
+        Add new solve with time of `t`
+        """
+
+        times.append(t)
+
+        # update number display to show real time
+        number_display.time = t
+        number_display.update()
+
+        # generate new scramble and update scramble_image
+        new_scramble = generate_scramble(int(settings['puzzle']),
+                                    int(settings['scramble-length']))
+        scrambles.append(new_scramble)
+        scramble_image.chars = char(new_scramble)
+
+        ao5, ao12 = update_stats()
+
+        with open(session_file.string, 'a') as f:
+            if len(times) == 1:
+                f.write(f'{add_zero(t)}\t{ao5}\t{ao12}\t{new_scramble}')
+            else:
+                f.write(f'\n{add_zero(t)}\t{ao5}\t{ao12}\t{new_scramble}')
+
     def delete(solve):
         """
         Removes all records of solve at index `solve`
@@ -536,6 +561,16 @@ def mainloops(stdscr):
 
                 raise ExitException()
 
+            elif words[0] == 'a':
+
+                if len(words) != 2:
+                    show_error_message(f'`a` takes exactly 1 arguement - {len(words) - 1} were given')
+
+                try:
+                    add_time(float(words[1]))
+                except ValueError:
+                    show_error_message(f'invalid time: {words[1]}')
+
             else:  # command was not recognized
                 show_error_message(f'{words[0]}: Invalid command')
                 
@@ -621,25 +656,9 @@ def mainloops(stdscr):
                 timer_running = False
 
                 t = round(time.time() - solve_start_time, 2)
-                times.append(t)
 
-                # update number display to show real time
-                number_display.time = t
-                number_display.update()
-
-                # generate new scramble and update scramble_image
-                new_scramble = generate_scramble(int(settings['puzzle']),
-                                            int(settings['scramble-length']))
-                scrambles.append(new_scramble)
-                scramble_image.chars = char(new_scramble)
-
-                ao5, ao12 = update_stats()
-
-                with open(session_file.string, 'a') as f:
-                    if len(times) == 1:
-                        f.write(f'{add_zero(t)}\t{ao5}\t{ao12}\t{new_scramble}')
-                    else:
-                        f.write(f'\n{add_zero(t)}\t{ao5}\t{ao12}\t{new_scramble}')
+                add_time(t)
+                
 
         session_name_image.render()
         
