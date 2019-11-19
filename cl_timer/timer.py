@@ -1,11 +1,17 @@
 import curses
 import json
-import os
+from os import mkdir
+from os.path import isfile, dirname
 from pathlib import Path
 import signal
 import string
 import subprocess
+import sys
 import time
+
+OUTER_PACKAGE_DIR = dirname(dirname(__file__))
+if OUTER_PACKAGE_DIR not in sys.path:
+    sys.path.append(OUTER_PACKAGE_DIR)
 
 from cl_timer.art import (
     DISCLAIMER,
@@ -26,7 +32,7 @@ char = lambda string: Char.fromstring(string)
 HOME = str(Path.home())
 
 try:
-    os.mkdir(f'{HOME}/.cl-timer')
+    mkdir(f'{HOME}/.cl-timer')
 except FileExistsError:
     pass
 
@@ -202,7 +208,7 @@ def mainloops(stdscr):
     session_file = ""
 
     session_file = MutableString(f'{HOME}/.cl-timer/{session.string}')
-    if not os.path.isfile(session_file.string):
+    if not isfile(session_file.string):
         with open(session_file.string, 'w+') as f:
             pass
     
@@ -219,7 +225,7 @@ def mainloops(stdscr):
         scrambles.append(line[3])
 
     settings_file = MutableString(f'{session_file.string}-settings.json')
-    if not os.path.isfile(settings_file.string):
+    if not isfile(settings_file.string):
         with open(settings_file.string, 'w+') as f:
             json.dump(settings, f)
     
@@ -491,7 +497,7 @@ def mainloops(stdscr):
                 session_name_image.displayed_chars = char(words[1])
                 session_name_image.render()
 
-                if not os.path.isfile(session_file.string):
+                if not isfile(session_file.string):
                     with open(session_file.string, 'w+') as f:
                         pass
 

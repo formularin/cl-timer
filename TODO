@@ -1,7 +1,8 @@
 v1.1
-Fix best average calculations
 Fix multiline scramble problems
 Customize averages
+Break timer.py into multiple modules
+Add sys.path thing to file in real repo
 
 v1.2
 clplot
