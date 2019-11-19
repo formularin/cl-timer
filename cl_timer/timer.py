@@ -22,7 +22,7 @@ from cl_timer.graphics import (
     CoverUpImage, Image, InputLine,
     Scramble, CommandInput, NumberDisplay
 )
-from cl_timer.parser import command_line
+from cl_timer.interpreter import command_line
 from cl_timer.scramble import generate_scramble
 from cl_timer.utils import (
     add_zero, ask_for_input,
