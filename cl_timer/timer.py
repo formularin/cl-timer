@@ -695,3 +695,6 @@ def main():
         curses.wrapper(mainloops)
     except ExitException:
         subprocess.call(['clear'])
+
+if __name__ == '__main__':
+    main()
