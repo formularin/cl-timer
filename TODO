@@ -1,6 +1,8 @@
 v1.1
 Customize averages
 Break timer.py into multiple modules
+Changing sessions removes last solve
+Recalculate all averages of 5 when times removed
 
 v1.2
 clplot

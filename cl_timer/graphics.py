@@ -65,6 +65,9 @@ class Char:
         return chars
 
 
+char = lambda string: Char.fromstring(string)
+
+
 class Image:
     """
     Something that alters the appearance of a Canvas object.
@@ -216,7 +219,7 @@ class NumberDisplay(Image):
         self.digit_char_arrays = []
         self.time = 0
         self.digits = []
-        self.chars = Char.fromstring(STARTING_TIME)
+        self.chars = char(STARTING_TIME)
         Image.__init__(self, canvas, x, y, self.chars)
 
     def update(self):
@@ -246,11 +249,11 @@ class NumberDisplay(Image):
                 full_string_lines[i].append(digit_string.split('\n')[i])
         full_string = '\n'.join([' '.join(line) for line in full_string_lines])
 
-        self.chars = Char.fromstring(full_string)
+        self.chars = char(full_string)
 
     def reset(self):
         self.time = 0
-        self.chars = Char.fromstring(STARTING_TIME)
+        self.chars = char(STARTING_TIME)
 
 
 class CoverUpImage(Image):
@@ -339,7 +342,7 @@ class Scramble(CoverUpImage):
                 if new_bottom_line == bottom_line:
                     break
                 bottom_line = new_bottom_line
-            self._chars = Char.fromstring('\n'.join([l.strip() for l in lines]))
+            self._chars = char('\n'.join([l.strip() for l in lines]))
             Image.render(self)
         else:
             Image.render(self)
