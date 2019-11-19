@@ -1,6 +1,8 @@
-TODO
+v1.1
+Fix best average calculations
+Fix multiline scramble problems
+Customize averages
 
-Erase scramble after multiline
-
- - commands
-   - graph using clplot
+v1.2
+clplot
+draw scramble
