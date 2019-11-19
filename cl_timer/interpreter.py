@@ -167,6 +167,10 @@ def command_line(
                     show_error_message(f'invalid file name: {words[1]}')
             session.string = words[1]
             session_file.string = f"{HOME}/.cl-timer/{words[1]}"
+            settings_file.string = f"{HOME}/.cl-timer/{words[1]}-settings.json"
+            with open(settings_file.string, 'r') as f:
+                for key, value in json.load(f).items():
+                    settings[key] = value
             session_name_image.displayed_chars = char(words[1])
             session_name_image.render()
 
