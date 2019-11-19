@@ -31,7 +31,6 @@ from cl_timer.utils import (
     ExitException, MutableString
 )
 
-
 HOME = str(Path.home())
 
 try:
@@ -166,15 +165,15 @@ def mainloops(stdscr):
         Looks through times list and finds last `length` solves before `solve`
         Excludes best and worst times, and returns average of the rest.
         """
-        if len(times) < length:
+        if len(times[:solve]) < length:
             # `length` solves haven't been done yet.
             return ''
         else:
             latest_average = times[solve - length:]  # list of last `length` solves
             latest_average, _ = convert_to_float(latest_average, "average")
-            if len(latest_average) < 4:
+            if len(latest_average) < (length - 1):
                 return 'DNF'
-            if len(latest_average) == 4:
+            if len(latest_average) == length:
                 latest_average.remove(max(latest_average))
             latest_average.remove(min(latest_average))
 
@@ -306,7 +305,7 @@ def mainloops(stdscr):
                 command_line(canvas, stdscr, settings, scramble_image,
                              settings_file, session_file, times, ao5s,
                              ao12s, scrambles, session, session_name_image,
-                             update_stats, add_time)
+                             update_stats, add_time, calculate_average)
             except CommandSyntaxError:
                 pass
             continue

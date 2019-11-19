@@ -27,7 +27,7 @@ HOME = str(Path.home())
 def command_line(
         canvas, stdscr, settings, scramble_image, settings_file, session_file,
         times, ao5s, ao12s, scrambles, session, session_name_image,
-        update_stats, add_time):
+        update_stats, add_time, calculate_average):
     """
     Inspired by vim...
     """
@@ -56,8 +56,8 @@ def command_line(
         # update `times`
         solve_time = times[-1]
         times[-1] = f'DNF({solve_time})'
-        ao5s.pop(-1)
-        ao12s.pop(-1)
+        ao5s[-1] = calculate_average(len(ao5s), 5)
+        ao12s[-1] = calculate_average(len(ao12s), 12)
 
         # update session file
         with open(session_file.string, 'r') as f:
@@ -76,8 +76,8 @@ def command_line(
         # udpate `times`
         solve_time = times[-1]
         times[-1] = add_zero(round(float(solve_time) + 2, 2)) + '+'
-        ao5s.pop(-1)
-        ao12s.pop(-1)
+        ao5s[-1] = calculate_average(len(ao5s), 5)
+        ao12s[-1] = calculate_average(len(ao12s), 12)
 
         # update session file
         with open(session_file.string, 'r') as f:
@@ -165,33 +165,41 @@ def command_line(
             for c in words[1]:
                 if c not in string.printable[:-5]:
                     show_error_message(f'invalid file name: {words[1]}')
+            new_file = False
             session.string = words[1]
             session_file.string = f"{HOME}/.cl-timer/{words[1]}"
             settings_file.string = f"{HOME}/.cl-timer/{words[1]}-settings.json"
-            with open(settings_file.string, 'r') as f:
-                for key, value in json.load(f).items():
-                    settings[key] = value
             session_name_image.displayed_chars = char(words[1])
             session_name_image.render()
-
-            if not isfile(session_file.string):
-                with open(session_file.string, 'w+') as f:
-                    pass
-
-            with open(session_file.string, 'r') as f:
-                time_lines = [line.split('\t') for line in f.read().split('\n')]
-
+            
             s = len(times)
 
             for lst in [times, ao5s, ao12s, scrambles]:
                 for _ in range(s):
                     lst.pop(0)
 
-            for line in time_lines:
-                times.append(line[0])
-                ao5s.append(line[1])
-                ao12s.append(line[2])
-                scrambles.append(line[3])
+            if not isfile(session_file.string):
+                with open(session_file.string, 'w+') as f:
+                    pass
+            else:
+                with open(session_file.string, 'r') as f:
+                    time_lines = [line.split('\t') for line in f.read().split('\n')]
+
+                for line in time_lines:
+                    times.append(line[0])
+                    ao5s.append(line[1])
+                    ao12s.append(line[2])
+                    scrambles.append(line[3])
+        
+            if isfile(settings_file.string):
+                with open(settings_file.string, 'r') as f:
+                    for key, value in json.load(f).items():
+                        settings[key] = value
+            else:
+                settings['puzzle'] = '3'
+                settings['scramble-length'] = '20'
+                with open(settings_file.string, 'w+') as f:
+                    json.dump(settings, f)
 
             update_stats()
         
@@ -219,6 +227,22 @@ def command_line(
                     show_error_message(f'invalid integer value: {words[1]}')
 
             delete(int(words[1]))
+
+            for i in range(len(ao5s)):
+                ao5s[i] = calculate_average(i + 1, 5)
+            for i in range(len(ao12s)):
+                ao12s[i] = calculate_average(i + 1, 12)
+
+            with open(session_file.string, 'w') as f:
+                f.write(
+                    '\n'.join(
+                        ['\t'.join([str(thing) for thing in 
+                         [time, ao5, ao12, scramble]])
+                         for time, ao5, ao12, scramble in
+                         zip(times, ao5s, ao12s, scrambles)]
+                        )
+                    )
+
             update_stats()
             
         elif words[0] == 'd':
