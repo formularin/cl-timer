@@ -250,6 +250,7 @@ def mainloops(stdscr):
         new_scramble = generate_scramble(int(settings['puzzle']),
                                     int(settings['scramble-length']))
         scrambles.append(new_scramble)
+        scramble_image.clear()
         scramble_image.chars = char(new_scramble)
 
         ao5, ao12 = update_stats()
@@ -466,6 +467,7 @@ def mainloops(stdscr):
 
                 new_scramble = generate_scramble(int(settings['puzzle']),
                                                 int(settings['scramble-length']))
+                scramble_image.clear()
                 scramble_image.chars = char(new_scramble)
 
                 with open(settings_file.string, 'w') as f:

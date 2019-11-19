@@ -315,6 +315,16 @@ class Scramble(CoverUpImage):
     def __init__(self, canvas, x, y, chars):
         CoverUpImage.__init__(self, canvas, x, y, chars)
 
+    def clear(self):
+        """
+        Replaces all chars on canvas with spaces
+        """
+        ys = []
+        for x, y in ([(c.x, c.y) for c in self._chars]):
+            self.canvas.replace(self.x + x, self.y + y, " ")
+            if y not in ys:
+                ys.append(y)
+
     def render(self):
         """
         This exists because scrambles can be longer than the length of the screen
