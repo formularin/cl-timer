@@ -26,8 +26,8 @@ HOME = str(Path.home())
 
 def command_line(
         canvas, stdscr, settings, scramble_image, settings_file, session_file,
-        times, ao5s, ao12s, scrambles, session, session_name_image,
-        update_stats, add_time, calculate_average, silent=False, command=False):
+        times, ao5s, ao12s, scrambles, session, session_name_image, update_stats,
+        add_time, calculate_average, aliases, silent=False, command=False):
     """
     Inspired by vim...
     """
@@ -133,7 +133,16 @@ def command_line(
         if command[-1] != '"':
             words.append(command.split(' ')[-1])
 
-        if words[0] == 's':
+        if words[0] == 'alias':
+            if len(words) != 3:
+                show_error_message(f'`alias` takes exactly 2 arguments - {len(words) - 1} were given')
+            
+            if words[1] in ['s', 'i', 'c', 'rm', 'd', 'p', 'q', 'a', 'alias']:
+                show_error_message(f'{words[1]} is a command. Choose a different name.')
+            
+            aliases[words[1]] = words[2].strip()
+
+        elif words[0] == 's':
             
             if len(words) != 3:
                 if len(words) == 1:
@@ -303,6 +312,9 @@ def command_line(
                 add_time(float(words[1]))
             except ValueError:
                 show_error_message(f'invalid time: {words[1]}')
+
+        elif words[0] in aliases.keys():
+            interpret(aliases[words[0]] + f' {"".join(words[1:])}')
 
         else:  # command was not recognized
             show_error_message(f'{words[0]}: Invalid command')

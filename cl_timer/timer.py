@@ -43,6 +43,8 @@ settings = {
     'scramble-length': '20'
 }
 
+aliases = {}
+
 
 def convert_to_float(lst, purpose):
     """
@@ -282,7 +284,8 @@ def mainloops(stdscr):
         for command in rc_commands:
             try:
                 command_line(canvas, stdscr, settings, scramble_image, settings_file, session_file, times, ao5s, ao12s,
-                            scrambles, session, session_name_image, update_stats, add_time, calculate_average, True, command)
+                            scrambles, session, session_name_image, update_stats, add_time, calculate_average, aliases,
+                            True, command)
             except CommandSyntaxError:
                 pass
     else:
@@ -317,7 +320,7 @@ def mainloops(stdscr):
                 command_line(canvas, stdscr, settings, scramble_image,
                              settings_file, session_file, times, ao5s,
                              ao12s, scrambles, session, session_name_image,
-                             update_stats, add_time, calculate_average)
+                             update_stats, add_time, calculate_average, aliases)
             except CommandSyntaxError:
                 pass
             continue
