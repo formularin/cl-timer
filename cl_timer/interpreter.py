@@ -89,7 +89,8 @@ def command_line(
             f.write('\n'.join(['\t'.join(line) for line in lines]))
 
     def show_error_message(string):
-        Image(canvas, 0, len(canvas.grid) - 1, char(string)).render()
+        if not silent:
+            Image(canvas, 0, len(canvas.grid) - 1, char(string)).render()
         raise CommandSyntaxError
 
     def interpret(command):
@@ -307,7 +308,7 @@ def command_line(
             show_error_message(f'{words[0]}: Invalid command')
 
     if not command:
-        bg = Image(canvas, 0, 0, char(canvas.display))
+        Image(canvas, 0, 0, char(canvas.display))
         command_inputs = []
 
         while True:
