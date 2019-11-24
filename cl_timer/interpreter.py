@@ -100,13 +100,45 @@ def command_line(
             cmd_ipt = CommandInput(canvas)
             command_inputs.append(cmd_ipt)
             command = ask_for_input(
-                stdscr, canvas, cmd_ipt, Cursor(canvas), True)
+                stdscr, canvas, cmd_ipt, Cursor(canvas), True).strip()
         except ExitCommandLine:
             for c in command_inputs:
                 c.hide()
             return
 
-        words = command.split(' ')
+        if command.count('"') % 2 != 0:
+            show_error_message('syntax error: odd number of quotes (")')
+
+        if '  ' in command:
+            show_error_message('syntax error: command parts separated by more than one space ( )')
+        
+        words = []
+        current_chars = []
+        in_quotes = False
+        skip = False
+        for i, c in enumerate(command):
+
+            if skip:
+                skip = False
+                continue
+
+            if in_quotes:
+                if c == '"':
+                    in_quotes = False
+                    skip = True
+                    words.append(''.join(current_chars))
+                    current_chars.clear()
+                else:
+                    current_chars.append(c)
+            else:
+                if c == '"':
+                    in_quotes = True
+                elif c == ' ':
+                    words.append(''.join(current_chars))
+                    current_chars.clear()
+                else:
+                    current_chars.append(c)
+
         if words[0] == 's':
             
             if len(words) != 3:

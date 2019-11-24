@@ -1,6 +1,9 @@
 v1.1
-Customize averages
-Terminal resize
+Arrow keys in input
+cl-timer_rc
+    - aliases
+    - default settings
+multiple commands at once separated by semicolon
 
 v1.2
 clplot
