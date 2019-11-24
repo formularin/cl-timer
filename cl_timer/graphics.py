@@ -179,7 +179,7 @@ class InputLine(Image):
             new_char = chr(char)  # converts int ascii code to get string for inputted char
 
             # replace current char in cursor location with new char
-            self.inputted_chars.insert(self.cursor_index - 2, new_char)
+            self.inputted_chars.insert(self.cursor_index - self.prompt_length, new_char)
             self.cursor_index += 1
 
             self.chars = Char.fromstring(
@@ -197,10 +197,11 @@ class InputLine(Image):
             self.render()
         
         elif char == 260:
-            self.cursor_index -= 1
+            if (self.cursor_index - self.prompt_length - 1) >= 0:
+                self.cursor_index -= 1
         
         elif char == 261:
-            if (self.prompt_length + len(self.inputted_chars)) > (self.cursor_index + 1):
+            if (self.prompt_length + len(self.inputted_chars)) >= (self.cursor_index + 1):
                 self.cursor_index += 1
 
 
