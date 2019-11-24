@@ -18,9 +18,9 @@ from cl_timer.art import (
     TITLE_ART,
 )
 from cl_timer.graphics import (
-    Canvas, char, Char, Cursor,
-    CoverUpImage, Image, InputLine,
-    Scramble, CommandInput, NumberDisplay
+    Canvas, Char, Cursor, CoverUpImage,
+    Image, InputLine, Scramble,
+    CommandInput, NumberDisplay
 )
 from cl_timer.interpreter import command_line
 from cl_timer.scramble import generate_scramble
@@ -44,6 +44,8 @@ settings = {
 }
 
 aliases = {}
+
+char = lambda string: Char.fromstring(string)
 
 
 def convert_to_float(lst, purpose):

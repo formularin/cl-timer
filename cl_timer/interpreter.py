@@ -10,7 +10,7 @@ if OUTER_PACKAGE_DIR not in sys.path:
     sys.path.append(OUTER_PACKAGE_DIR)
 
 from cl_timer.graphics import (
-    char, Char, CommandInput,
+    Char, CommandInput,
     Cursor, Image, InputLine
 )
 from cl_timer.scramble import generate_scramble
@@ -22,6 +22,8 @@ from cl_timer.utils import (
 
 
 HOME = str(Path.home())
+
+char = lambda string: Char.fromstring(string)
 
 
 def command_line(
