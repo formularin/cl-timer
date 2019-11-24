@@ -38,6 +38,8 @@ try:
 except FileExistsError:
     pass
 
+with open(f'{HOME}/.cl-timer_rc', 'w+') as f:
+    pass
 
 settings = {
     'puzzle': '3',
