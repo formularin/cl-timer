@@ -27,7 +27,7 @@ HOME = str(Path.home())
 def command_line(
         canvas, stdscr, settings, scramble_image, settings_file, session_file,
         times, ao5s, ao12s, scrambles, session, session_name_image,
-        update_stats, add_time, calculate_average):
+        update_stats, add_time, calculate_average, silent=False, command=False):
     """
     Inspired by vim...
     """
@@ -92,20 +92,10 @@ def command_line(
         Image(canvas, 0, len(canvas.grid) - 1, char(string)).render()
         raise CommandSyntaxError
 
-    bg = Image(canvas, 0, 0, char(canvas.display))
-    command_inputs = []
-
-    while True:
-        try:
-            cmd_ipt = CommandInput(canvas)
-            command_inputs.append(cmd_ipt)
-            command = ask_for_input(
-                stdscr, canvas, cmd_ipt, Cursor(canvas), True).strip()
-        except ExitCommandLine:
-            for c in command_inputs:
-                c.hide()
-            return
-
+    def interpret(command):
+        """
+        Performs tasks according to what the command tells it
+        """
         if command.count('"') % 2 != 0:
             show_error_message('syntax error: odd number of quotes (")')
 
@@ -139,6 +129,9 @@ def command_line(
                 else:
                     current_chars.append(c)
 
+        if command[-1] != '"':
+            words.append(command.split(' ')[-1])
+
         if words[0] == 's':
             
             if len(words) != 3:
@@ -146,7 +139,7 @@ def command_line(
                     show_error_message('`s` takes exactly 2 arguments - 0 were given')
                 else:
                     if words[1] in ['p', 'sl']:
-                        show_error_message(f'`s {words[1]}` takes 1 argument - {len(words) - 1} were given')
+                        show_error_message(f'`s {words[1]}` takes 1 argument - {len(words) - 2} were given')
             
             if words[1] in ['p', 'sl']:
                 if words[1] == 'p':
@@ -252,9 +245,9 @@ def command_line(
                         for _ in range(1, len(times[:]) + 1):
                             delete(1)
                         update_stats()
-                        continue
+                        return
                     else:
-                        continue
+                        return
                 else:
                     show_error_message(f'invalid integer value: {words[1]}')
 
@@ -269,9 +262,9 @@ def command_line(
                 f.write(
                     '\n'.join(
                         ['\t'.join([str(thing) for thing in 
-                         [time, ao5, ao12, scramble]])
-                         for time, ao5, ao12, scramble in
-                         zip(times, ao5s, ao12s, scrambles)]
+                            [time, ao5, ao12, scramble]])
+                            for time, ao5, ao12, scramble in
+                            zip(times, ao5s, ao12s, scrambles)]
                         )
                     )
 
@@ -312,3 +305,21 @@ def command_line(
 
         else:  # command was not recognized
             show_error_message(f'{words[0]}: Invalid command')
+
+    if not command:
+        bg = Image(canvas, 0, 0, char(canvas.display))
+        command_inputs = []
+
+        while True:
+            try:
+                cmd_ipt = CommandInput(canvas)
+                command_inputs.append(cmd_ipt)
+                cmd = ask_for_input(
+                    stdscr, canvas, cmd_ipt, Cursor(canvas), True).strip()
+            except ExitCommandLine:
+                for c in command_inputs:
+                    c.hide()
+                return
+            interpret(cmd)
+    else:
+        interpret(command)
