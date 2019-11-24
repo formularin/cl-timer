@@ -38,9 +38,6 @@ try:
 except FileExistsError:
     pass
 
-with open(f'{HOME}/.cl-timer_rc', 'w+') as f:
-    pass
-
 settings = {
     'puzzle': '3',
     'scramble-length': '20'
@@ -278,6 +275,19 @@ def mainloops(stdscr):
     number_of_times_image = CoverUpImage(canvas, 51, 12, char(f'Number of Times: {len_successes}/{len(times)}'))
     
     session_mean_image = CoverUpImage(canvas, 51, 13, char(f'Session Mean: {get_session_mean()}'))
+
+    if isfile(f'{HOME}/.cl-timer_rc'):
+        with open(f'{HOME}/.cl-timer_rc', 'r') as f:
+            rc_commands = f.read().strip().split('\n')
+        for command in rc_commands:
+            try:
+                command_line(canvas, stdscr, settings, scramble_image, settings_file, session_file, times, ao5s, ao12s,
+                            scrambles, session, session_name_image, update_stats, add_time, calculate_average, True, command)
+            except CommandSyntaxError:
+                pass
+    else:
+        with open(f'{HOME}/.cl-timer_rc', 'w+') as f:
+            pass
     
     ao5_image.render()
     ao12_image.render()
