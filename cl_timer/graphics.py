@@ -65,9 +65,6 @@ class Char:
         return chars
 
 
-char = lambda string: Char.fromstring(string)
-
-
 class Image:
     """
     Something that alters the appearance of a Canvas object.
@@ -134,13 +131,14 @@ class InputLine(Image):
 
         # prompt never stored as attribute because it is never used except now.
 
-        self.prompt_length = len(prompt)
+        self.prompt = prompt
+        self.prompt_length = len(self.prompt)
         self.cursor_index = self.prompt_length
         self.submitted = False
         self.inputted_chars = []
 
         y = len(canvas.grid) - 1
-        prompt_chars = [Char(i, 0, char) for i, char in enumerate(prompt)]
+        prompt_chars = [Char(i, 0, char) for i, char in enumerate(self.prompt)]
         # this Image fills entire horizontal distance of canvas
         input_chars = [Char(i, 0, ' ') for i in range(self.prompt_length, len(canvas.grid[-1]))]
         chars = prompt_chars + input_chars
@@ -175,14 +173,18 @@ class InputLine(Image):
         # -1 - no key pressed
         # 127 - backspace
         # 10 - enter
-        if not (char in [-1, 127, 10]):
+        # 260 - left arrow
+        # 261 - right arrow
+        if not (char in [-1, 127, 10, 260, 261]):
             new_char = chr(char)  # converts int ascii code to get string for inputted char
 
             # replace current char in cursor location with new char
-            self.chars[self.cursor_index] = Char(self.cursor_index, 0, new_char)
-
+            self.inputted_chars.insert(self.cursor_index - 2, new_char)
             self.cursor_index += 1
-            self.inputted_chars.append(new_char)
+
+            self.chars = Char.fromstring(
+                self.prompt + ''.join(self.inputted_chars) + ''.join(
+                    [' ' for _ in range(len(self.canvas.grid[-1]) - (self.prompt_length + len(self.inputted_chars)))]))
 
         elif char == 127:  # backspace
             self._del_char()
@@ -193,6 +195,13 @@ class InputLine(Image):
             # renders self as a line of space chars, appearing invisible.
             self.chars = [Char(i, 0, ' ') for i in range(len(self.chars))]
             self.render()
+        
+        elif char == 260:
+            self.cursor_index -= 1
+        
+        elif char == 261:
+            if (self.prompt_length + len(self.inputted_chars)) > (self.cursor_index + 1):
+                self.cursor_index += 1
 
 
 class CommandInput(InputLine):
@@ -219,7 +228,7 @@ class NumberDisplay(Image):
         self.digit_char_arrays = []
         self.time = 0
         self.digits = []
-        self.chars = char(STARTING_TIME)
+        self.chars = Char.fromstring(STARTING_TIME)
         Image.__init__(self, canvas, x, y, self.chars)
 
     def update(self):
@@ -249,11 +258,11 @@ class NumberDisplay(Image):
                 full_string_lines[i].append(digit_string.split('\n')[i])
         full_string = '\n'.join([' '.join(line) for line in full_string_lines])
 
-        self.chars = char(full_string)
+        self.chars = Char.fromstring(full_string)
 
     def reset(self):
         self.time = 0
-        self.chars = char(STARTING_TIME)
+        self.chars = Char.fromstring(STARTING_TIME)
 
 
 class CoverUpImage(Image):
@@ -342,7 +351,7 @@ class Scramble(CoverUpImage):
                 if new_bottom_line == bottom_line:
                     break
                 bottom_line = new_bottom_line
-            self._chars = char('\n'.join([l.strip() for l in lines]))
+            self._chars = Char.fromstring('\n'.join([l.strip() for l in lines]))
             Image.render(self)
         else:
             Image.render(self)
@@ -361,6 +370,10 @@ class Cursor(Image):
 
         self.previous_x = self.x
         self.previous_y = self.y
+
+        # self.potential_chars = [Char(0, 0, self.canvas.grid[(len(self.grid) - 1) - self.y][self.x]), u'\u2588']
+
+        # self.previous_char = [self.potential_chars[0]]
 
         self.previous_char = Char(0, 0, ' ')
 
