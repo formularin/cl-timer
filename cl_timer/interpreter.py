@@ -20,6 +20,9 @@ from cl_timer.utils import (
     ExitException, MutableString
 )
 
+import logging as l
+
+logging = l.getLogger(__name__)
 
 HOME = str(Path.home())
 
@@ -99,6 +102,12 @@ def command_line(
         """
         Performs tasks according to what the command tells it
         """
+
+        if ';' in command:
+            for subcommand in command.split(';'):
+                interpret(subcommand.strip())
+            return
+
         if command.count('"') % 2 != 0:
             show_error_message('syntax error: odd number of quotes (")')
 
@@ -134,6 +143,8 @@ def command_line(
 
         if command[-1] != '"':
             words.append(command.split(' ')[-1])
+
+        logging.info(words)
 
         if words[0] == 'alias':
             if len(words) != 3:
@@ -316,7 +327,7 @@ def command_line(
                 show_error_message(f'invalid time: {words[1]}')
 
         elif words[0] in aliases.keys():
-            interpret(aliases[words[0]] + f' {"".join(words[1:])}')
+            interpret(aliases[words[0]] + f' {" ".join(words[1:])}')
 
         else:  # command was not recognized
             show_error_message(f'{words[0]}: Invalid command')

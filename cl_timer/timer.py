@@ -31,6 +31,10 @@ from cl_timer.utils import (
     ExitException, MutableString
 )
 
+import logging
+
+logging.basicConfig(filename='cl-timer.log', level=logging.INFO)
+
 HOME = str(Path.home())
 
 try:
