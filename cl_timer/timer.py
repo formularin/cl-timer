@@ -283,6 +283,7 @@ def mainloops(stdscr):
     if isfile(f'{HOME}/.cl-timer_rc'):
         with open(f'{HOME}/.cl-timer_rc', 'r') as f:
             rc_commands = f.read().strip().split('\n')
+            rc_commands.remove('')
         for command in rc_commands:
             try:
                 command_line(canvas, stdscr, settings, scramble_image, settings_file, session_file, times, ao5s, ao12s,

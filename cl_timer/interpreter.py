@@ -140,8 +140,6 @@ def command_line(
         if command[-1] != '"':
             words.append(command.split(' ')[-1])
 
-        logging.info(words)
-
         if words[0] == 'alias':
             if len(words) != 3:
                 show_error_message(f'`alias` takes exactly 2 arguments - {len(words) - 1} were given')
