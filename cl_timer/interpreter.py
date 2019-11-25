@@ -20,10 +20,6 @@ from cl_timer.utils import (
     ExitException, MutableString
 )
 
-import logging as l
-
-logging = l.getLogger(__name__)
-
 HOME = str(Path.home())
 
 char = lambda string: Char.fromstring(string)
