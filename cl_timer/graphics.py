@@ -157,11 +157,13 @@ class InputLine(Image):
         Removes last char from input field
         """
         if self.cursor_index > self.prompt_length:
-            # change appearance
-            self.chars[self.cursor_index] = Char(self.cursor_index, 0, ' ')
-
             # change value
-            self.inputted_chars = self.inputted_chars[:-1]
+            self.inputted_chars.pop(self.cursor_index - self.prompt_length - 1)
+
+            # change appearance
+            self.chars = Char.fromstring(
+                self.prompt + ''.join(self.inputted_chars) + ''.join(
+                    [' ' for _ in range(len(self.canvas.grid[-1]) - (self.prompt_length + len(self.inputted_chars)))]))
 
             self.cursor_index -= 1
 
