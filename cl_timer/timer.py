@@ -392,4 +392,10 @@ def main():
         subprocess.call(['clear'])
 
 if __name__ == '__main__':
-    main()
+    try:
+        if sys.argv[1] == '--version':
+            print('v1.1.3')
+        else:
+            print(f'{sys.argv[1]}: not a valid option.\nUsage:\ncl-timer [--version]')
+    except IndexError:
+        main()
