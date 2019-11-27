@@ -283,7 +283,8 @@ def mainloops(stdscr):
     if isfile(f'{HOME}/.cl-timer_rc'):
         with open(f'{HOME}/.cl-timer_rc', 'r') as f:
             rc_commands = f.read().strip().split('\n')
-            rc_commands.remove('')
+            if '' in rc_commands:
+                rc_commands.remove('')
         for command in rc_commands:
             try:
                 command_line(canvas, stdscr, settings, scramble_image, settings_file, session_file, times, ao5s, ao12s,
@@ -391,4 +392,10 @@ def main():
         subprocess.call(['clear'])
 
 if __name__ == '__main__':
-    main()
+    try:
+        if sys.argv[1] == '--version':
+            print('v1.1.3')
+        else:
+            print(f'{sys.argv[1]}: not a valid option.\nUsage:\ncl-timer [--version]')
+    except IndexError:
+        main()

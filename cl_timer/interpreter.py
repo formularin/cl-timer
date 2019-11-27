@@ -99,17 +99,14 @@ def command_line(
         Performs tasks according to what the command tells it
         """
 
-        if ';' in command:
-            for subcommand in command.split(';'):
-                interpret(subcommand.strip())
-            return
-
         if command.count('"') % 2 != 0:
             show_error_message('syntax error: odd number of quotes (")')
 
         if '  ' in command:
             show_error_message('syntax error: command parts separated by more than one space ( )')
         
+        semicolon_in_quotes = False
+
         words = []
         current_chars = []
         in_quotes = False
@@ -127,6 +124,8 @@ def command_line(
                     words.append(''.join(current_chars))
                     current_chars.clear()
                 else:
+                    if c == ';':
+                        semicolon_in_quotes = True
                     current_chars.append(c)
             else:
                 if c == '"':
@@ -139,6 +138,12 @@ def command_line(
 
         if command[-1] != '"':
             words.append(command.split(' ')[-1])
+
+        if ';' in command:
+            if not semicolon_in_quotes:
+                for subcommand in command.split(';'):
+                    interpret(subcommand.strip())
+                return
 
         if words[0] == 'alias':
             if len(words) != 3:

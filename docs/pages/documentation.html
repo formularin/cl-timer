@@ -30,6 +30,9 @@
                 <div id="basic-instructions">
                     <p>Startup Command: <code>cl-timer</code>. As of right now, there are no command-line options.</p>
                     <p>Once you are in a session, press ":" to enter command mode. To exit command mode, press the escape key.</p>
+                    <p>You can use double-quotes &#40;<code>""</code>&#41; to enclose string with spaces in them.</p>
+                    <p>You can use semicolons &#40;<code>;</code>&#41; to separate multiple commands in one line.</p>
+                    <p>On installation, a hidden file called cl-timer_rc will be created in your home directory. Each line in this file will be executed as a command on opening of cl-timer. You can use this for aliases, default settings, and really anything you want.</p>
                 </div>
                 <div id="commands">
                     <h2>Commands</h2>
@@ -90,9 +93,20 @@
                         <div class="command-explanation">
                             <p class="command-syntax">Syntax: <code>a  &lt;time&gt;</code></p>
                             <ul class="arg-explanations">
-                                <li><code>time</code> - The amount of time it took you to complete the solve. Plus-twos and DNFs can be adde later just like a time inputted by the spacebar.</li>
+                                <li>time - The amount of time it took you to complete the solve. Plus-twos and DNFs can be adde later just like a time inputted by the spacebar.</li>
                             </ul>
                             <p class="example-usage">Example Usage: <code>a 3.47</code> - add a new solve with a time of 3.47</p>
+                        </div>
+                    </div>
+                    <div class="command">
+                        <h4 class="command-name"><code>alias</code> - create an alternative name for a command</h4>
+                        <div class="command-explanation">
+                            <p class="command-syntax">Syntax: <code>alias &lt;name&gt; &lt;command&gt;</code></p>
+                            <ul class="arg-explanations">
+                                <li>name - the text that will replace the command</li>
+                                <li>command - the code to be executed when the name is entered</li>
+                            </ul>
+                            <p class="example-usage">Example Usage: <code>alias sp "s p"</code> - now you can use <code>sp 2</code> instead of <code>s p 2</code></p>
                         </div>
                     </div>
                 </div>
