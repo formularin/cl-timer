@@ -1,3 +1,9 @@
+"""
+Various strings that are either too frequently used to be defined more than
+once, or are too big to belong in functional code. 
+"""
+
+
 DECIMAL_POINT = ' \n \n.\n '
 
 
