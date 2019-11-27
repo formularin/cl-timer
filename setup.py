@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="cl-timer",
-    version="1.1.2",
+    version="1.1.3",
     author="Arin Khare",
     author_email="arinmkhare@gmail.com",
     description="A Cubing Timer for the Terminal",
