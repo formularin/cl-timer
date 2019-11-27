@@ -1,7 +1,6 @@
 v1.1.3
-add version number to __init__.py
 add comments and docstrings and improve style
-use semicolons in quotes
+give example of cl-timer_rc in documentation
 
 v1.2
 cloud storage
