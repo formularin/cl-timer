@@ -52,7 +52,6 @@ def ask_for_input(stdscr, canvas, input_line, cursor, command_line=False):
     """
     Uses graphics.InputLine object to get input from user.
     """
-    frame = 0
     while True:
 
         key = stdscr.getch()
@@ -65,8 +64,6 @@ def ask_for_input(stdscr, canvas, input_line, cursor, command_line=False):
 
             input_line.type_char(key)
             cursor.move(0, input_line.cursor_index)
-            if frame % 50 == 0:
-                cursor.toggle_char()
 
             input_line.render()
             cursor.render()
@@ -79,7 +76,6 @@ def ask_for_input(stdscr, canvas, input_line, cursor, command_line=False):
         stdscr.addstr(canvas.display)
         stdscr.refresh()
 
-        frame += 1
         time.sleep(0.01)
 
     return input_line.value

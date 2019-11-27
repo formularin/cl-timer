@@ -374,12 +374,6 @@ class Cursor(Image):
         self.previous_x = self.x
         self.previous_y = self.y
 
-        # self.potential_chars = [Char(0, 0, self.canvas.grid[(len(self.grid) - 1) - self.y][self.x]), u'\u2588']
-
-        # self.previous_char = [self.potential_chars[0]]
-
-        self.previous_char = Char(0, 0, ' ')
-
     def render(self):
         """
         Override inherited render method because
@@ -397,15 +391,6 @@ class Cursor(Image):
             self.y,
             (len(self.canvas.grid) - 1) - self.x,
             self.chars[0].char)
-
-    def toggle_char(self):
-        """
-        Changes from block char to space for blinking effect
-        """
-        new_char = self.previous_char
-        old_char = self.chars[0]
-        self.chars[0] = new_char
-        self.previous_char = old_char
 
     def move(self, x, y):
         """
