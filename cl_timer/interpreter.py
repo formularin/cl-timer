@@ -225,7 +225,10 @@ def command_line(
                     pass
             else:
                 with open(session_file.string, 'r') as f:
-                    time_lines = [line.split('\t') for line in f.read().split('\n')]
+                    lines = f.read().split('\n')
+                if '' in lines:
+                    lines.remove('')
+                time_lines = [line.split('\t') for line in lines]
 
                 for line in time_lines:
                     times.append(line[0])
